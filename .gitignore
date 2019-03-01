@@ -2,5 +2,5 @@
 *.swp
 *.o
 *.a
-project
+lem_in
 debug_*
