@@ -6,7 +6,7 @@
 #    By: kbatz <marvin@42.fr>                       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/12/25 21:10:51 by kbatz             #+#    #+#              #
-#    Updated: 2019/03/01 18:21:41 by kbatz            ###   ########.fr        #
+#    Updated: 2019/03/03 17:06:55 by kbatz            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,7 +65,7 @@ lib%:
 
 norm:
 	norminette $(addprefix $(SRCDIR), $(SRC))
-	norminette $(addprefix $(HDRDIR), $(HDR))
+	norminette $(HDR)
 
 g: $(OBJDIR) $(OBJ)
 	gcc -g $(addprefix $(SRCDIR), $(SRC)) -o debug_$(NAME) $(IFLAG) $(LFLAG)

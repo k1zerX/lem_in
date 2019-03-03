@@ -6,12 +6,12 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/21 07:25:53 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/21 07:26:27 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/03/03 17:07:13 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PROJECT_H
-# define PROHECT_H
+# define PROJECT_H
 
 # include "libft.h"
 
