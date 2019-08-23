@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 01:41:54 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:07:56 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:01:20 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIST_H
 # define LIST_H
 
-#include "libft.h"
+# include "libft.h"
 
 typedef struct			s_list
 {

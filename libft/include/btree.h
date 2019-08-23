@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 01:43:23 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:13:09 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:00:40 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef BTREE_H
 # define BTREE_H
 
-#include "libft.h"
+# include "libft.h"
 
 typedef struct			s_btree
 {

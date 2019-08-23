@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 01:51:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:11:41 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:01:33 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MEM_H
 # define MEM_H
 
-#include "libft.h"
+# include "libft.h"
 
 void					ft_bzero(void *s, size_t n);
 void					*ft_memalloc(size_t size);

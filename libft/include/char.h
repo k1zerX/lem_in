@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 01:44:53 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:07:34 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:00:43 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHAR_H
 # define CHAR_H
 
-#include "libft.h"
+# include "libft.h"
 
 int						ft_isalnum(int c);
 int						ft_isalpha(int c);

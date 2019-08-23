@@ -1,18 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   project.h                                          :+:      :+:    :+:   */
+/*   lem_in.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/02/21 07:25:53 by kbatz             #+#    #+#             */
-/*   Updated: 2019/03/03 17:07:13 by kbatz            ###   ########.fr       */
+/*   Created: 2019/08/24 00:21:10 by kbatz             #+#    #+#             */
+/*   Updated: 2019/08/24 00:33:40 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PROJECT_H
-# define PROJECT_H
+#ifndef LEM_IN_H
+# define LEM_IN_H
 
-# include "libft.h"
+typedef struct		s_edge
+{
+	int				weight;
+	struct s_node	*node;
+}					t_edge
+
+typedef struct		s_node
+{
+	t_edge			*edges;
+	int				distance;
+}					t_node;
 
 #endif

@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 00:56:48 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:12:41 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:02:01 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STACK_H
 # define STACK_H
 
-#include "libft.h"
+# include "libft.h"
 
 typedef struct			s_stack
 {

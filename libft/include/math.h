@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/04 21:14:48 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/17 03:06:10 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:01:28 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MATH_H
 # define MATH_H
 
-#include "libft.h"
+# include "libft.h"
 
 # define LOG_PR 0.000001
 # define LOG_ADD_PR 1000000

@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 00:59:09 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:12:10 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:01:51 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RBTREE_H
 # define RBTREE_H
 
-#include "libft.h"
+# include "libft.h"
 
 # define BLACK 0
 # define RED 1

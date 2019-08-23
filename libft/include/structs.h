@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 01:53:41 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:13:05 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:02:18 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCTS_H
 # define STRUCTS_H
 
-#include "libft.h"
+# include "libft.h"
 
 typedef struct			s_elem
 {

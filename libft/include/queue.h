@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 00:53:03 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:11:57 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:01:44 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef QUEUE_H
 # define QUEUE_H
 
-#include "libft.h"
+# include "libft.h"
 
 typedef struct			s_queue
 {

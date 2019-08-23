@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 01:52:46 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:11:47 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:01:38 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PUT_H
 # define PUT_H
 
-#include "libft.h"
+# include "libft.h"
 
 void					ft_putchar(char c);
 void					ft_putchar_fd(char c, int fd);

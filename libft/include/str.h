@@ -6,14 +6,14 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/05 01:46:42 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:12:49 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/08/24 00:02:12 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STR_H
 # define STR_H
 
-#include "libft.h"
+# include "libft.h"
 
 int						ft_atoi(const char *str);
 char					*ft_itoa(int n);
