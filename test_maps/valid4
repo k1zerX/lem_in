@@ -1,0 +1,12 @@
+4
+2 16 7
+#comment
+3 -16 34 16 5 
+ret 9 3
+-6 1 5-7 4 +8
+##end
+0 9 5
+##start
+&4# 23 -3
+0-4
+0--6&4#-34-3ret-23-ret#another comment4-22-&4#-7--6-7-2-7-4-6-ret#another comment
