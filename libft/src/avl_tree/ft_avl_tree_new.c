@@ -1,22 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_bintree_prefix.c                                :+:      :+:    :+:   */
+/*   ft_avl_tree_new.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/28 17:48:54 by kbatz             #+#    #+#             */
-/*   Updated: 2018/12/20 13:29:42 by kbatz            ###   ########.fr       */
+/*   Created: 2019/05/25 15:11:08 by kbatz             #+#    #+#             */
+/*   Updated: 2019/09/11 23:46:35 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_btree_prefix(t_btree *start, void (*f)(t_btree *))
+t_avl_tree	*ft_avl_tree_new(int (*cmp)(t_avl_node *a, t_avl_node *b))
 {
-	if (!start || !f)
-		return ;
-	(*f)(start);
-	ft_btree_prefix(start->left, f);
-	ft_btree_prefix(start->right, f);
+	t_avl_tree	*tmp;
+
+	if ((tmp = malloc(sizeof(*tmp))))
+	{
+		tmp->n = 0;
+		tmp->root = NULL;
+		tmp->cmp = cmp;
+	}
+	return (tmp);
 }

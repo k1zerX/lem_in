@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/28 15:00:24 by kbatz             #+#    #+#             */
-/*   Updated: 2019/01/17 17:08:43 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/03/04 15:42:29 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@ t_stack		*ft_stack_new(void)
 {
 	t_stack		*stack;
 
-	stack = malloc(sizeof(stack));
-	stack->start = NULL;
-	stack->len = 0;
+	if (!(stack = ft_memalloc(sizeof(*stack))))
+		return (NULL);
 	return (stack);
 }
