@@ -1,28 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   gnl.h                                              :+:      :+:    :+:   */
+/*   avl_new_tree.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/25 23:20:28 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:07:43 by kbatz            ###   ########.fr       */
+/*   Created: 2019/05/25 15:11:08 by kbatz             #+#    #+#             */
+/*   Updated: 2019/09/11 23:46:35 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GNL_H
-# define GNL_H
+#include "libft.h"
 
-# include "libft.h"
-
-# define BUFF_SIZE 30
-
-typedef struct		s_file
+t_avl_tree	*avl_new_tree(int (*cmp)(t_avl_node *a, t_avl_node *b))
 {
-	char			*line;
-	int				fd;
-}					t_file;
+	t_avl_tree	*tmp;
 
-int					gnl(const int fd, char **line, int buff_size);
-
-#endif
+	if ((tmp = malloc(sizeof(*tmp))))
+	{
+		tmp->n = 0;
+		tmp->root = NULL;
+		tmp->cmp = cmp;
+	}
+	return (tmp);
+}

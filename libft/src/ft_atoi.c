@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   put.h                                              :+:      :+:    :+:   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/02/05 01:52:46 by kbatz             #+#    #+#             */
-/*   Updated: 2019/02/05 02:11:47 by kbatz            ###   ########.fr       */
+/*   Created: 2018/11/20 20:05:39 by kbatz             #+#    #+#             */
+/*   Updated: 2019/09/08 20:13:18 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PUT_H
-# define PUT_H
+#include "libft.h"
 
-# include "libft.h"
+int		ft_atoi(const char *str)
+{
+	long	res;
+	char	sign;
 
-void					ft_putchar(char c);
-void					ft_putchar_fd(char c, int fd);
-void					ft_putendl(char const *s);
-void					ft_putendl_fd(char const *s, int fd);
-void					ft_putnbr(int n);
-void					ft_putnbr_fd(int n, int fd);
-void					ft_putstr(char const *s);
-void					ft_putstr_fd(char const *s, int fd);
-
-#endif
+	res = 0;
+	sign = 0;
+	while ((*str >= 9 && *str <= 13) || *str == 32)
+		++str;
+	if (*str == '-' || *str == '+')
+		sign = *str++ == '-';
+	while (*str >= '0' && *str <= '9')
+		res = res * 10 + (*str++ - '0');
+	return ((int)(sign ? -res : res));
+}
