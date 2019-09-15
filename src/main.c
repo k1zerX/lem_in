@@ -6,50 +6,58 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/06 20:58:52 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/09/16 00:27:16 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "avl.h"
 #include "container.h"
 
-int		main(void)
-{
-	return (0);
-}
-
-/*
-int		cmp(t_avl_node *a, t_avl_node *b)
+int		cmp(t_node *a, t_node *b)
 {
 	return (ft_strcmp(((t_node *)a->content)->name, \
 			((t_node *)b->content)->name));
 }
 
+t_node	*new_node(T_AVL_KEY key)
+{
+	t_node	*tmp;
+
+	if (!(tmp = malloc(sizeof(t_node))))
+		ft_exit();
+	tmp->name = key;
+	tmp->left = NULL;
+	tmp->right = NULL;
+	if (tmp->edges = ctnr_new())
+		ft_exit();
+	return (tmp);
+}
+
 int		main(void)
 {
-	t_avl_tree	*tree;
-	int			i;
-	char		**arr;
-	t_avl_tree	*tmp1;
-	t_avl_tree	*tmp2;
+	t_node	*root;
+	int		i;
+	char	**arr;
+	t_node	*tmp;
 
-	tree = avl_new_tree(&cmp);
 	i = 1;
-	while (i < ac && *av[i] != '-')
+	while (i < ac && *av[i] != ';')
 	{
-		avl_insert(tree, av[i]);
+		root = avl_insert(root, new_node(av[i]));
 		++i;
 	}
+	++i;
 	while (i < ac)
 	{
 		arr = ft_strsplit(av[i], '-');
-		tmp1 = avl_find(tree->root, avl_new_node(arr[0], ft_strlen(arr[0]), 0), tree->cmp);
-		tmp2 = avl_find(tree->root, avl_new_node(arr[1], ft_strlen(arr[1]), 0), tree->cmp);
+		tmp1 = avl_find(root, arr[0], &cmp);
+		tmp2 = avl_find(root, arr[1], &cmp);
+		ctnr_push_bot(tmp1->edges, elem_new(tmp2));
+		ctnr_push_bot(tmp2->edges, elem_new(tmp1));
 	}
 	return (0);
 }
-
-
+/*
 void	ft_add_node(t_node *nodes, int *len, char *str)
 {
 	int		name_len;
@@ -77,7 +85,7 @@ int		main(int ac, char **av)
 	gnl(0, &str, GNL_BUFF);
 	ants = ft_atoi(str);
 	free(str);
-	while (gnl(0, &str, GNL_BUFF))
+	while (gnl(0, &str, GNL_BUFF) > 0)
 	{
 		if (ft_strequ(str, "##start"))
 		{
@@ -97,4 +105,4 @@ int		main(int ac, char **av)
 		free(str);
 	}
 	return (0);
-}*/
+}

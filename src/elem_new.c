@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   avl_insert.c                                       :+:      :+:    :+:   */
+/*   elem_new.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/11 21:28:01 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/15 23:15:09 by kbatz            ###   ########.fr       */
+/*   Created: 2019/09/15 21:44:34 by kbatz             #+#    #+#             */
+/*   Updated: 2019/09/15 23:41:00 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "avl.h"
+#include "ctnr.h"
 
-t_node	*avl_insert(t_node *root, t_node *node, \
-		int (*cmp)(T_AVL_KEY a, T_AVL_KEY b))
+t_elem	*elem_new(t_node *node)
 {
-	if (!root)
-		return (node);
-	if ((*cmp)(node->AVL_KEY, root->AVL_KEY) < 0)
-		root->left = avl_insert(root->left, node, cmp);
-	else
-		root->right = avl_insert(root->right, node, cmp);
-	return (avl_balance(root));
+	t_elem	*tmp;
+
+	if ((tmp = malloc(sizeof(t_elem))))
+	{
+		tmp->next = NULL;
+		tmp->prev = NULL;
+		tmp->weight = 1;
+		tmp->node = node;
+	}
+	return (tmp);
 }

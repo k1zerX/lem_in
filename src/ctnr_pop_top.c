@@ -1,25 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   avl_insert.c                                       :+:      :+:    :+:   */
+/*   ctnr_pop_top.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/11 21:28:01 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/15 23:15:09 by kbatz            ###   ########.fr       */
+/*   Created: 2019/09/15 21:36:08 by kbatz             #+#    #+#             */
+/*   Updated: 2019/09/15 23:51:35 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "avl.h"
+#include "ctnr.h"
 
-t_node	*avl_insert(t_node *root, t_node *node, \
-		int (*cmp)(T_AVL_KEY a, T_AVL_KEY b))
+t_elem	*ctnr_pop_top(t_ctnr *ctnr)
 {
-	if (!root)
-		return (node);
-	if ((*cmp)(node->AVL_KEY, root->AVL_KEY) < 0)
-		root->left = avl_insert(root->left, node, cmp);
-	else
-		root->right = avl_insert(root->right, node, cmp);
-	return (avl_balance(root));
+	t_elem	*tmp;
+
+	tmp = ctnr->top;
+	if (tmp)
+	{
+		if (tmp->next)
+		{
+			ctnr->top = tmp->next;
+			tmp->next = NULL;
+		}
+		else
+		{
+			ctnr->top = NULL;
+			ctnr->bot = NULL;
+		}
+	}
+	return (tmp);
 }
