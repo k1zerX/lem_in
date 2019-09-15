@@ -12,9 +12,9 @@
 
 #include "libft.h"
 
-t_elem		*ft_queue_pop(t_queue *queue)
+t_sq_elem		*ft_queue_pop(t_queue *queue)
 {
-	t_elem		*tmp;
+	t_sq_elem		*tmp;
 
 	if (!queue->len)
 		return (NULL);

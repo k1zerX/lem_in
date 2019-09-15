@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "gnl.h"
 #include "libft.h"
 
 t_list	*get_lst(t_list **all_data, int fd)

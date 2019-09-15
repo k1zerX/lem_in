@@ -10,14 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "avl.h"
 
-static char			bfactor(t_avl_node *node)
+static char		bfactor(t_node *node)
 {
 	return (HEIGHT(node->right) - HEIGHT(node->left));
 }
 
-static void			fixheight(t_avl_node *node)
+static void		fixheight(t_node *node)
 {
 	unsigned char	hl;
 	unsigned char	hr;
@@ -27,9 +27,9 @@ static void			fixheight(t_avl_node *node)
 	node->height = (hl > hr) ? (hl) : (hr) + 1;
 }
 
-static t_avl_node	*rotl(t_avl_node *node)
+static t_node	*rotl(t_node *node)
 {
-	t_avl_node	*tmp;
+	t_node	*tmp;
 
 	tmp = node->right;
 	node->right = tmp->left;
@@ -39,9 +39,9 @@ static t_avl_node	*rotl(t_avl_node *node)
 	return (tmp);
 }
 
-static t_avl_node	*rotr(t_avl_node *node)
+static t_node	*rotr(t_node *node)
 {
-	t_avl_node	*tmp;
+	t_node	*tmp;
 
 	tmp = node->left;
 	node->left = tmp->right;
@@ -51,7 +51,7 @@ static t_avl_node	*rotr(t_avl_node *node)
 	return (tmp);
 }
 
-t_avl_node			*avl_balance(t_avl_node *node)
+t_node			*avl_balance(t_node *node)
 {
 	char	b;
 

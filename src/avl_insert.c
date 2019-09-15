@@ -1,26 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   avl_new_tree.c                                     :+:      :+:    :+:   */
+/*   avl_insert.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/05/25 15:11:08 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/11 23:46:35 by kbatz            ###   ########.fr       */
+/*   Created: 2019/09/11 21:28:01 by kbatz             #+#    #+#             */
+/*   Updated: 2019/09/11 23:43:22 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "avl.h"
 
-t_avl_tree	*avl_new_tree(int (*cmp)(t_avl_node *a, t_avl_node *b))
+t_node	*avl_insert(t_node *root, t_node *node, \
+		int (*cmp)(T_AVL_KEY a, T_AVL_KEY b))
 {
-	t_avl_tree	*tmp;
-
-	if ((tmp = malloc(sizeof(*tmp))))
-	{
-		tmp->n = 0;
-		tmp->root = NULL;
-		tmp->cmp = cmp;
-	}
-	return (tmp);
+	if (!root)
+		return (node);
+	if ((*cmp)(node->AVL_KEY, root->AVL_KEY) < 0)
+		root->left = avl_insert(root->left, node, cmp);
+	else
+		root->right = avl_insert(root->right, node, cmp);
+	return (avl_balance(root));
 }

@@ -10,7 +10,45 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lem_in.h"
+#include "avl.h"
+#include "container.h"
+
+int		main(void)
+{
+	return (0);
+}
+
+/*
+int		cmp(t_avl_node *a, t_avl_node *b)
+{
+	return (ft_strcmp(((t_node *)a->content)->name, \
+			((t_node *)b->content)->name));
+}
+
+int		main(void)
+{
+	t_avl_tree	*tree;
+	int			i;
+	char		**arr;
+	t_avl_tree	*tmp1;
+	t_avl_tree	*tmp2;
+
+	tree = avl_new_tree(&cmp);
+	i = 1;
+	while (i < ac && *av[i] != '-')
+	{
+		avl_insert(tree, av[i]);
+		++i;
+	}
+	while (i < ac)
+	{
+		arr = ft_strsplit(av[i], '-');
+		tmp1 = avl_find(tree->root, avl_new_node(arr[0], ft_strlen(arr[0]), 0), tree->cmp);
+		tmp2 = avl_find(tree->root, avl_new_node(arr[1], ft_strlen(arr[1]), 0), tree->cmp);
+	}
+	return (0);
+}
+
 
 void	ft_add_node(t_node *nodes, int *len, char *str)
 {
@@ -59,4 +97,4 @@ int		main(int ac, char **av)
 		free(str);
 	}
 	return (0);
-}
+}*/
