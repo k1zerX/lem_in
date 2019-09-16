@@ -9,7 +9,7 @@
 /*   Updated: 2019/09/15 18:05:17 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+/*
 #include "lem_in.h"
 
 void	ft_error(char *str)
@@ -99,4 +99,4 @@ int		main(int ac, char **av)
 	//algorithm();
 	//put_solution();
 	return (0);
-}
+}*/

@@ -6,7 +6,7 @@ t_node	*avl_find(t_node *root, T_AVL_KEY key, \
 	int			buf;
 
 	while (root)
-		if ((buf = (*cmp)(root->AVL_KEY, key)) < 0)
+		if ((buf = (*cmp)(key, root->AVL_KEY)) < 0)
 			root = root->left;
 		else if (buf > 0)
 			root = root->right;

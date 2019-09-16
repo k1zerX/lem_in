@@ -16,7 +16,7 @@ void	ctnr_push_bot(t_ctnr *ctnr, t_elem *elem)
 {
 	if (ctnr->bot)
 	{
-		ctnr->prev = ctnr->bot;
+		elem->prev = ctnr->bot;
 		ctnr->bot->next = elem;
 	}
 	else

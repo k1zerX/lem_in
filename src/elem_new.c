@@ -11,8 +11,9 @@
 /* ************************************************************************** */
 
 #include "ctnr.h"
+#include "stdlib.h"
 
-t_elem	*elem_new(t_node *node)
+t_elem	*elem_new(void)
 {
 	t_elem	*tmp;
 
@@ -20,8 +21,6 @@ t_elem	*elem_new(t_node *node)
 	{
 		tmp->next = NULL;
 		tmp->prev = NULL;
-		tmp->weight = 1;
-		tmp->node = node;
 	}
 	return (tmp);
 }

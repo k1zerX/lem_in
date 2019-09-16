@@ -11,15 +11,16 @@
 /* ************************************************************************** */
 
 #include "avl.h"
-#include "container.h"
+#include "libft.h"
 
-int		cmp(t_node *a, t_node *b)
+#include <stdio.h>
+
+void		ft_exit(void)
 {
-	return (ft_strcmp(((t_node *)a->content)->name, \
-			((t_node *)b->content)->name));
+	exit(1);
 }
 
-t_node	*new_node(T_AVL_KEY key)
+t_node		*new_node(T_AVL_KEY key, t_content c)
 {
 	t_node	*tmp;
 
@@ -28,33 +29,89 @@ t_node	*new_node(T_AVL_KEY key)
 	tmp->name = key;
 	tmp->left = NULL;
 	tmp->right = NULL;
-	if (tmp->edges = ctnr_new())
-		ft_exit();
+	tmp->c = c;
 	return (tmp);
 }
 
-int		main(void)
+t_content	new_room(void)
+{
+	t_content	c;
+
+	c.room.edges = NULL;
+	return (c);
+}
+
+t_content	new_edge(t_node *room)
+{
+	t_content	c;
+
+	c.edge.room = room;
+	c.edge.weight = 1;
+	return (c);
+}
+
+void		print_edge(t_node *node)
+{
+	printf("\t%s\n", node->name);
+}
+
+void		print_room(t_node *node)
+{
+	printf("%s to:\n", node->name);
+	avl_infix(node->c.room.edges, &print_edge);
+	printf("\n");
+}
+
+void		print_node(t_node *node)
+{
+	printf("%s\n", node->name);
+}
+
+int			main(int ac, char *av[])
 {
 	t_node	*root;
 	int		i;
 	char	**arr;
 	t_node	*tmp;
+	t_node	*tmp1;
+	t_node	*tmp2;
+	t_node	*start;
+	t_node	*end;
 
 	i = 1;
+	start = NULL;
+	end = NULL;
+	root = NULL;
 	while (i < ac && *av[i] != ';')
 	{
-		root = avl_insert(root, new_node(av[i]));
+		if (*av[i] == '#')
+		{
+			++i;
+			continue ;
+		}
+		tmp = new_node(av[i], new_room());
+		if (ft_strequ(av[i - 1], "##start"))
+			start = tmp;
+		if (ft_strequ(av[i - 1], "##end"))
+			end = tmp;
+		root = avl_insert(root, tmp, &ft_strcmp);
 		++i;
 	}
 	++i;
 	while (i < ac)
 	{
 		arr = ft_strsplit(av[i], '-');
-		tmp1 = avl_find(root, arr[0], &cmp);
-		tmp2 = avl_find(root, arr[1], &cmp);
-		ctnr_push_bot(tmp1->edges, elem_new(tmp2));
-		ctnr_push_bot(tmp2->edges, elem_new(tmp1));
+		tmp1 = avl_find(root, arr[0], &ft_strcmp);
+		tmp2 = avl_find(root, arr[1], &ft_strcmp);
+		tmp = new_node(tmp1->name, new_edge(tmp1));
+		tmp2->c.room.edges = avl_insert(tmp2->c.room.edges, tmp, &ft_strcmp);
+		tmp = new_node(tmp2->name, new_edge(tmp2));
+		tmp1->c.room.edges = avl_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
+		++i;
 	}
+	avl_infix(root, &print_room);
+	printf("start = %s\n", start ? start->name : NULL);
+	printf("end   = %s\n", end ? end->name : NULL);
 	return (0);
 }
 /*
@@ -105,4 +162,4 @@ int		main(int ac, char **av)
 		free(str);
 	}
 	return (0);
-}
+}*/
