@@ -41,6 +41,7 @@ struct						s_room
 {
 	t_node					*edges;
 	int						distance;
+	char					visited;
 };
 
 union						u_content

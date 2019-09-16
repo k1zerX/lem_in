@@ -38,6 +38,7 @@ t_content	new_room(void)
 	t_content	c;
 
 	c.room.edges = NULL;
+	c.room.visited = 0;
 	return (c);
 }
 
@@ -65,6 +66,51 @@ void		print_room(t_node *node)
 void		print_node(t_node *node)
 {
 	printf("%s\n", node->name);
+}
+
+void		dijkstra_suffix(t_node *root, t_queue *queue, int distance)
+{
+	t_node	*room;
+	int		buf;
+
+	if (!root)
+		return ;
+	dijkstra_suffix(root->left, queue, distance);
+	dijkstra_suffix(root->right, queue, distance);
+	room = root->c.edge.room;
+	buf = distance + root->c.edge.weight;
+	if (room->c.room.visited)
+	{
+		if (room->c.room.distance > buf)
+			room->c.room.distance = buf;
+		else
+			return ;
+	}
+	else
+	{
+		room->c.room.distance = buf;
+		room->c.room.visited = 1;
+	}
+	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_node), 0));
+}
+
+void	dijkstra(t_node *start)
+{
+	t_queue		*queue;
+	t_sq_elem	*tmp;
+
+	start->c.room.distance = 0;
+	start->c.room.visited = 1;
+	queue = ft_queue_new();
+	ft_queue_push(queue, ft_new_sq_elem(start, sizeof(t_node), 0));
+	while (queue->len)
+	{
+		tmp = ft_queue_pop(queue);
+		start = (t_node *)tmp->content;
+		printf("%s: %d\n", start->name, start->c.room.distance);
+		dijkstra_suffix(start->c.room.edges, queue, start->c.room.distance);
+		free(tmp);
+	}
 }
 
 int			main(int ac, char *av[])
@@ -101,6 +147,11 @@ int			main(int ac, char *av[])
 	while (i < ac)
 	{
 		arr = ft_strsplit(av[i], '-');
+		if (ft_strequ(arr[0], arr[1]))
+		{
+			++i;
+			continue ;// ????
+		}
 		tmp1 = avl_find(root, arr[0], &ft_strcmp);
 		tmp2 = avl_find(root, arr[1], &ft_strcmp);
 		tmp = new_node(tmp1->name, new_edge(tmp1));
@@ -112,6 +163,7 @@ int			main(int ac, char *av[])
 	avl_infix(root, &print_room);
 	printf("start = %s\n", start ? start->name : NULL);
 	printf("end   = %s\n", end ? end->name : NULL);
+	dijkstra(start);
 	return (0);
 }
 /*
