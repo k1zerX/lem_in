@@ -199,10 +199,10 @@ void		path_invert_rec(t_node *node, t_node *from) /* seychas eto recursiya no lu
 {
 	t_elem	*tmp;
 	t_node	*buf;
+	t_node	*out;
 
 	if (!node)
 		return ;
-//	printf("%s\n", node->name);
 	node->c.room.edges = avl_remove(node->c.room.edges, from->name, &ft_strcmp);
 	tmp = node->c.room.froms->top;
 //	printf("\t%p\n", tmp);
@@ -212,6 +212,15 @@ void		path_invert_rec(t_node *node, t_node *from) /* seychas eto recursiya no lu
 		buf = avl_find(node->c.room.edges, tmp->node->name, &ft_strcmp);
 		buf->c.edge.weight *= -1;
 		tmp = tmp->next;
+	}
+	if (node->c.room.froms->top)
+	{
+		out = new_node(ft_strjoin(node->name, "-out"), new_room());
+		ft_swap(&node->c.room.edges, &out->c.room.edges, sizeof(node->c.room.edges));
+		buf = new_node(out->name, new_edge(out));
+		buf->c.edge.weight = 0;
+		node->c.room.edges = avl_insert(node->c.room.edges, buf, &ft_strcmp);
+		print_room(out);
 	}
 }
 
