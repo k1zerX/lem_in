@@ -13,20 +13,21 @@
 #ifndef CTNR_H
 # define CTNR_H
 
+typedef struct s_ctnr	t_ctnr;
+typedef struct s_elem	t_elem;
+
 # include "avl.h"
+# include "stdlib.h"
 
 # ifndef NULL
 #  define NULL (void *)0
 # endif
 
-typedef struct s_ctnr	t_ctnr;
-typedef struct s_elem	t_elem;
-
 struct					s_ctnr
 {
 	t_elem				*top;
 	t_elem				*bot;
-//	size_t				length;
+	size_t				length;
 };
 
 struct					s_elem

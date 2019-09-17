@@ -19,6 +19,9 @@ typedef struct	s_room		t_room;
 typedef union	u_content	t_content;
 typedef enum	e_type		t_type;
 
+#include "ctnr.h"
+#include "stdlib.h"
+
 # define T_AVL_KEY char *
 
 # define AVL_KEY name
@@ -40,8 +43,8 @@ struct						s_edge
 struct						s_room
 {
 	t_node					*edges;
+	t_node					*from;
 	int						distance;
-	char					visited;
 };
 
 union						u_content
@@ -66,5 +69,6 @@ t_node						*avl_find(t_node *root, T_AVL_KEY key, \
 									int (*cmp)(T_AVL_KEY a, T_AVL_KEY b));
 void						avl_bfs(t_node *root, void (*f)(t_node *node));
 void						avl_infix(t_node *root, void (*f)(t_node *node));
+t_node						*avl_remove(t_node *root, T_AVL_KEY key);
 
 #endif
