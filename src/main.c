@@ -217,10 +217,13 @@ void		path_invert_rec(t_node *node, t_node *from) /* seychas eto recursiya no lu
 	{
 		out = new_node(ft_strjoin(node->name, "-out"), new_room());
 		ft_swap(&node->c.room.edges, &out->c.room.edges, sizeof(node->c.room.edges));
-		buf = new_node(out->name, new_edge(out));
+		buf = new_node(node->name, new_edge(node));
 		buf->c.edge.weight = 0;
-		node->c.room.edges = avl_insert(node->c.room.edges, buf, &ft_strcmp);
+		out->c.room.edges = avl_insert(out->c.room.edges, buf, &ft_strcmp);
 		print_room(out);
+/*
+ * seychas posle razbiyeniya in ukazyvaet na out, a dolzhno byt' naoborot.
+ */
 	}
 }
 

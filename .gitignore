@@ -2,5 +2,5 @@
 *.swp
 *.o
 *.a
-lem_in
+lem-in
 debug_*
