@@ -39,7 +39,7 @@ t_content	new_room(void)
 	t_content	c;
 
 	c.room.edges = NULL;
-	c.room.from = NULL;
+	c.room.froms = ctnr_new();
 	return (c);
 }
 
@@ -74,20 +74,44 @@ void		del_node(t_node *node)
 	free(node);
 }
 
+t_elem	*new_elem(t_node *node)
+{
+	t_elem	*tmp;
+
+	if ((tmp = malloc(sizeof(t_elem))))
+	{
+		tmp->node = node;
+		tmp->next = NULL;
+		tmp->prev = NULL;
+	}
+	return (tmp);
+}
+
+void		del_elem(t_elem *elem)
+{
+	free(elem);
+}
+
+void		node_re(t_node *node)
+{
+	ctnr_clear(node->c.room.froms, &del_elem);
+}
+
 void		s_treatment(t_node *root, char *name)
 {
 	if (!root)
 		return ;
 	s_treatment(root->left, name);
 	s_treatment(root->right, name);
-	free(avl_remove(root->c.edge.room->c.room.edges, name));
+	free(avl_remove(root->c.edge.room->c.room.edges, name, &ft_strcmp));
 }
 
 void		se_treatment(t_node *start, t_node *end)
 {
 	avl_infix(end->c.room.edges, &del_node);
 	end->c.room.edges = NULL;
-	s_treatment(start->c.room.edges, start->name);
+	(void)start;
+//	s_treatment(start->c.room.edges, start->name);
 }
 
 void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
@@ -100,22 +124,26 @@ void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
 	not_dijkstra_suffix(root->left, queue, from);
 	not_dijkstra_suffix(root->right, queue, from);
 	room = root->c.edge.room;
+//	printf("%s\n", root->name);
+//	printf("%p\n", room);
 	buf = from->c.room.distance + root->c.edge.weight;
-	if (room->c.room.from)
+	if (room->c.room.froms->top)
 	{
+//	printf("%s %d vs %d\n", room->name, room->c.room.distance, buf);
 		if (room->c.room.distance > buf)
 			room->c.room.distance = buf;
 		else if (room->c.room.distance == buf)
-		{
-//			room->c.room.from + from
-		}
+			ctnr_push_bot(room->c.room.froms, new_elem(from));
 		else
 			return ;
+//	printf("before\n");
+//	printf("after\n");
 	}
 	else
 	{
 		room->c.room.distance = buf;
-		room->c.room.from = from;
+		ctnr_clear(room->c.room.froms, &del_elem);
+		ctnr_push_bot(room->c.room.froms, new_elem(from));
 	}
 	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_node), 0));
 }
@@ -138,12 +166,70 @@ void	not_dijkstra(t_node *start)
 	}
 }
 
-void		print_paths(t_node *end)// beta printit tolko 1 path
+void		print_path_rec(t_node *node, char *str)
 {
-	if (!end)
+	t_elem	*tmp;
+	char	*buf;
+
+	tmp = node->c.room.froms->top;
+	if (!tmp)
+	{
+		printf("%s\n", str);
+		free(str);
 		return ;
-	print_paths(end->c.room.from);
-	printf("%s -> ", end->name);
+	}
+	buf = str;
+	str = ft_strjoin(buf, " <- ");
+	free(buf);
+	while (tmp)
+	{
+		print_path_rec(tmp->node, ft_strjoin(str, tmp->node->name));
+		free(str);
+		tmp = tmp->next;
+	}
+}
+
+void		print_paths(t_node *end)
+{
+	print_path_rec(end, ft_strdup(end->name));
+}
+
+void		path_invert_rec(t_node *node, t_node *from) /* seychas eto recursiya no luchshe sdelat' ochered' \
+															to est' obhod v shirinu vmesto obhoda v glubinu */
+{
+	t_elem	*tmp;
+	t_node	*buf;
+
+	if (!node)
+		return ;
+//	printf("%s\n", node->name);
+	node->c.room.edges = avl_remove(node->c.room.edges, from->name, &ft_strcmp);
+	tmp = node->c.room.froms->top;
+//	printf("\t%p\n", tmp);
+	while (tmp)
+	{
+		path_invert_rec(tmp->node, node);
+		buf = avl_find(node->c.room.edges, tmp->node->name, &ft_strcmp);
+		buf->c.edge.weight *= -1;
+		tmp = tmp->next;
+	}
+}
+
+void		path_invert(t_node *end)
+{
+	t_elem	*tmp;
+	t_node	*buf;
+
+	tmp = end->c.room.froms->top;
+	while (tmp)
+	{
+		path_invert_rec(tmp->node, end);
+//		buf = avl_find(end->c.room.edges, tmp->node->name, &ft_strcmp);
+		buf = new_node(tmp->node->name, new_edge(tmp->node));
+		end->c.room.edges = avl_insert(end->c.room.edges, buf, &ft_strcmp);
+		buf->c.edge.weight *= -1;
+		tmp = tmp->next;
+	}
 }
 
 int			main(int ac, char *av[])
@@ -201,12 +287,18 @@ int			main(int ac, char *av[])
 	printf("ants  = %d\n", n);
 	printf("start = %s\n", start ? start->name : NULL);
 	printf("end   = %s\n", end ? end->name : NULL);
-	se_treatment(start, end);// ubrat' treatment, prosto ne sozdavat' lishniye svyazi
-	start->c.room.from = start;// ubrat' kogda pofikshu se_treatment
+	se_treatment(start, end);// ubrat' treatment, prosto ne sozdavat' lishniye svyazi dlya start & end
+	ctnr_push_bot(start->c.room.froms, new_elem(start));// ubrat' kogda pofikshu se_treatment
 	not_dijkstra(start);
-	start->c.room.from = NULL;// ubrat' kogda pofikshu se_treatment
-	print_paths(end->c.room.from);
-	printf("%s\n", end->name);
+	free(ctnr_pop_top(start->c.room.froms));// ubrat' kogda pofikshu se_treatment
+	print_paths(end);
+	path_invert(end); // segfault, need to fix
+	avl_infix(root, &print_room);
+	avl_infix(root, &node_re);
+	ctnr_push_bot(start->c.room.froms, new_elem(start));// ubrat' kogda pofikshu se_treatment
+	not_dijkstra(start);
+	free(ctnr_pop_top(start->c.room.froms));// ubrat' kogda pofikshu se_treatment
+	print_paths(end);
 	return (0);
 }
 /*

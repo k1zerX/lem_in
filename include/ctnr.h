@@ -17,7 +17,7 @@ typedef struct s_ctnr	t_ctnr;
 typedef struct s_elem	t_elem;
 
 # include "avl.h"
-# include "stdlib.h"
+# include <stdlib.h>
 
 # ifndef NULL
 #  define NULL (void *)0
@@ -27,11 +27,12 @@ struct					s_ctnr
 {
 	t_elem				*top;
 	t_elem				*bot;
-	size_t				length;
+//	size_t				length;
 };
 
 struct					s_elem
 {
+	t_node				*node;
 	t_elem				*next;
 	t_elem				*prev;
 };
@@ -41,6 +42,6 @@ t_elem					*ctnr_pop_bot(t_ctnr *ctnr);
 void					ctnr_push_top(t_ctnr *ctnr, t_elem *elem);
 void					ctnr_push_bot(t_ctnr *ctnr, t_elem *elem);
 t_ctnr					*ctnr_new(void);
-t_elem					*elem_new(void);
+void					ctnr_clear(t_ctnr *ctnr, void (*del)(t_elem *elem));
 
 #endif
