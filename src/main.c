@@ -221,6 +221,11 @@ void		path_invert_rec(t_node *node, t_node *from) /* seychas eto recursiya no lu
 		buf->c.edge.weight = 0;
 		out->c.room.edges = avl_insert(out->c.room.edges, buf, &ft_strcmp);
 		print_room(out);
+		from->c.room.edges = avl_remove(from->c.room.edges, node->name, &ft_strcmp)
+		buf = new_node(out->name, new_edge(out));
+		buf->c.edge.weight *= -1;
+		from->c.room.edges = avl_insert(from->c.room.edges, buf, &ft_strcmp);
+		// dodelat', peredelat,
 /*
  * seychas posle razbiyeniya in ukazyvaet na out, a dolzhno byt' naoborot.
  */
@@ -243,7 +248,75 @@ void		path_invert(t_node *end)
 		tmp = tmp->next;
 	}
 }
+/*
+t_node		*fill_start(void)
+{
+	
+}
 
+t_node		*fill_end(void)
+{
+}
+
+char		smart_split(char *str, char ***arr)
+{
+	char	*start;
+	int		length;
+	char	res;
+
+	res = 0;
+	start = str;
+	while (*str)
+	{
+		
+		++str;
+	}
+	while (!ft_issapce(*str) && !(*str == '-'))
+	{
+	}
+	return (res);
+}
+
+t_node		*init(int *ants)
+{
+	char	*str;
+	int		n;
+	char	**arr;
+
+	if ((n = gnl(0, &str) < 0))
+		ft_exit();
+	ants = atoi(str);
+	free(str);
+	flag = 0;
+	while ((n = gnl(0, &str)) > 0)
+	{
+		if (*str == '#')
+		{
+			if (ft_strequ(str, "##start")
+				start = fill_start();
+			else if (ft_strequ(str, "##end")
+				end = fill_end();
+		}
+		else
+		{
+			if (smart_split(str, &arr))
+			{
+			}
+		}
+		free(str);
+	}
+	if (n < 0)
+		ft_exit();
+}
+
+int			main(void)
+{
+	t_node	*root;
+	int		ants;
+
+	root = init(&ants);
+}
+*/
 int			main(int ac, char *av[])
 {
 	t_node	*root;
