@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/16 00:27:16 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/07 00:44:25 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,22 @@
 #include "libft.h"
 
 #include <stdio.h>
+/*
+enum e_err = 
+{
+	READ_ERR,
+	MALLOC_ERR,
+	VALID_ERR,
+	LEN
+};
 
+char	*g_str_err[LEN] = 
+{
+	[READ_ERR] = "read error\n",
+	[MALLOC_ERR] = "cant allocate\n",
+	[VALID_ERR] = "fuck\n",
+};
+*/
 void		ft_exit(void)
 {
 	exit(1);
@@ -43,12 +58,24 @@ t_content	new_room(void)
 	return (c);
 }
 
-t_content	new_edge(t_node *room)
+t_state		*new_state(void)
+{
+	t_state		*state;
+
+	if (!(state = malloc(sizeof(t_state))))
+		ft_exit();
+	state->weight = 1;
+	state->is_active = 1;
+	return (state);
+}
+
+t_content	new_edge(t_node *room, t_state *state)
 {
 	t_content	c;
 
 	c.edge.room = room;
-	c.edge.weight = 1;
+	c.edge.state = state;
+	c.edge.existance = 1;
 	return (c);
 }
 
@@ -92,26 +119,33 @@ void		del_elem(t_elem *elem)
 	free(elem);
 }
 
-void		node_re(t_node *node)
-{
-	ctnr_clear(node->c.room.froms, &del_elem);
-}
-
-void		s_treatment(t_node *root, char *name)
+void		reset_suffix(t_node *root, t_queue *queue)
 {
 	if (!root)
 		return ;
-	s_treatment(root->left, name);
-	s_treatment(root->right, name);
-	free(avl_remove(root->c.edge.room->c.room.edges, name, &ft_strcmp));
+	reset_suffix(root->left, queue);
+	reset_suffix(root->right, queue);
+	if (root->c.edge.state->is_active)
+		return ;
+	root->c.edge.state->is_active = 1;
+	ft_queue_push(queue, ft_new_sq_elem(root->c.edge.room, sizeof(t_node), 0));
 }
 
-void		se_treatment(t_node *start, t_node *end)
+void		reset(t_node *start)
 {
-	avl_infix(end->c.room.edges, &del_node);
-	end->c.room.edges = NULL;
-	(void)start;
-//	s_treatment(start->c.room.edges, start->name);
+	t_queue		*queue;
+	t_sq_elem	*tmp;
+
+	queue = ft_queue_new();
+	ft_queue_push(queue, ft_new_sq_elem(start, sizeof(t_node), 0));
+	while (queue->len)
+	{
+		tmp = ft_queue_pop(queue);
+		start = (t_node *)tmp->content;
+		ctnr_clear(start->c.room.froms, &del_elem);
+		reset_suffix(start->c.room.edges, queue);
+		free(tmp);
+	}
 }
 
 void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
@@ -123,15 +157,22 @@ void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
 		return ;
 	not_dijkstra_suffix(root->left, queue, from);
 	not_dijkstra_suffix(root->right, queue, from);
+	if (!root->c.edge.existance || !root->c.edge.state->is_active)
+		return ;
+	root->c.edge.state->is_active = 0;
 	room = root->c.edge.room;
 //	printf("%s\n", root->name);
 //	printf("%p\n", room);
-	buf = from->c.room.distance + root->c.edge.weight;
+	buf = from->c.room.distance + root->c.edge.state->weight;
 	if (room->c.room.froms->top)
 	{
 //	printf("%s %d vs %d\n", room->name, room->c.room.distance, buf);
 		if (room->c.room.distance > buf)
+		{
 			room->c.room.distance = buf;
+			ctnr_clear(room->c.room.froms, &del_elem);
+			ctnr_push_bot(room->c.room.froms, new_elem(from));
+		}
 		else if (room->c.room.distance == buf)
 			ctnr_push_bot(room->c.room.froms, new_elem(from));
 		else
@@ -142,7 +183,6 @@ void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
 	else
 	{
 		room->c.room.distance = buf;
-		ctnr_clear(room->c.room.froms, &del_elem);
 		ctnr_push_bot(room->c.room.froms, new_elem(from));
 	}
 	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_node), 0));
@@ -160,42 +200,68 @@ void	not_dijkstra(t_node *start)
 	{
 		tmp = ft_queue_pop(queue);
 		start = (t_node *)tmp->content;
-		printf("%s: %d\n", start->name, start->c.room.distance);
+//		printf("%s: %d\n", start->name, start->c.room.distance);
 		not_dijkstra_suffix(start->c.room.edges, queue, start);
 		free(tmp);
 	}
 }
 
-void		print_path_rec(t_node *node, char *str)
+void		print_paths(t_ctnr *path)
 {
 	t_elem	*tmp;
-	char	*buf;
-
-	tmp = node->c.room.froms->top;
-	if (!tmp)
-	{
-		printf("%s\n", str);
-		free(str);
-		return ;
-	}
-	buf = str;
-	str = ft_strjoin(buf, " <- ");
-	free(buf);
+	tmp = path->top;
 	while (tmp)
 	{
-		print_path_rec(tmp->node, ft_strjoin(str, tmp->node->name));
-		free(str);
+		printf("\t%s\n", ((t_node *)tmp->node)->name);
 		tmp = tmp->next;
 	}
 }
 
-void		print_paths(t_node *end)
+void		edge_reverse(t_node *node, t_node *prev)
 {
-	print_path_rec(end, ft_strdup(end->name));
+	t_node	*edge;
+
+	edge = avl_find(node->c.room.edges, prev->name, &ft_strcmp);
+	edge->c.edge.state->weight *= -1;
+	edge->c.edge.existance = 0;
+	edge = avl_find(prev->c.room.edges, node->name, &ft_strcmp);
+	edge->c.edge.existance = 1;
 }
 
-void		path_invert_rec(t_node *node, t_node *from) /* seychas eto recursiya no luchshe sdelat' ochered' \
-															to est' obhod v shirinu vmesto obhoda v glubinu */
+void		path_invert_rec(t_node *node, t_node *prev)
+{
+	t_elem	*next;
+//	t_node	*out;
+
+	(void)prev;
+/*	printf("%s\n", node->name);
+	printf("\t%p\n", node);
+	printf("\t%p\n", node->c.room.froms);
+	printf("\t%p\n", node->c.room.froms->top);
+	printf("\t%p\n", node->c.room.froms->top->node);*/
+	next = node->c.room.froms->top;
+	if (!next)
+		return ;
+//	out = new_node(av[i], new_room());
+//	out->c.room.edges = node->c.room.edges;
+//	node->c.room.edges = NULL;
+	edge_reverse(next->node, node);
+	path_invert_rec(next->node, node);
+}
+
+void		path_invert(t_node *end)
+{
+	t_node	*tmp;
+
+	tmp = end->c.room.froms->top->node;
+	if (!tmp)
+		return ;
+	edge_reverse(tmp, end);
+	path_invert_rec(tmp, end);
+}
+/*
+void		path_invert_rec(t_node *node, t_node *from) seychas eto recursiya no luchshe sdelat' ochered' \
+															to est' obhod v shirinu vmesto obhoda v glubinu 
 {
 	t_elem	*tmp;
 	t_node	*buf;
@@ -225,13 +291,11 @@ void		path_invert_rec(t_node *node, t_node *from) /* seychas eto recursiya no lu
 		buf = new_node(out->name, new_edge(out));
 		buf->c.edge.weight *= -1;
 		from->c.room.edges = avl_insert(from->c.room.edges, buf, &ft_strcmp);
-		// dodelat', peredelat,
-/*
- * seychas posle razbiyeniya in ukazyvaet na out, a dolzhno byt' naoborot.
- */
+		// dodelat', peredelat
+seychas posle razbiyeniya in ukazyvaet na out, a dolzhno byt' naoborot.
 	}
-}
-
+}*/
+/*
 void		path_invert(t_node *end)
 {
 	t_elem	*tmp;
@@ -247,7 +311,7 @@ void		path_invert(t_node *end)
 		buf->c.edge.weight *= -1;
 		tmp = tmp->next;
 	}
-}
+}*/
 /*
 t_node		*fill_start(void)
 {
@@ -317,6 +381,18 @@ int			main(void)
 	root = init(&ants);
 }
 */
+
+t_ctnr		*find_paths(t_node *start, t_node *end)
+{
+	t_ctnr	*tmp;
+
+	reset(start);
+	not_dijkstra(end);
+	tmp = start->c.room.froms;
+	start->c.room.froms = ctnr_new();
+	return (tmp);
+}
+
 int			main(int ac, char *av[])
 {
 	t_node	*root;
@@ -328,6 +404,11 @@ int			main(int ac, char *av[])
 	t_node	*start;
 	t_node	*end;
 	int		n;
+	int		max_paths;
+	int		s_n;
+	int		e_n;
+	t_state *state;
+	t_ctnr	**sols;
 
 	if (ac > 1)
 		n = ft_atoi(av[1]);
@@ -351,6 +432,8 @@ int			main(int ac, char *av[])
 		++i;
 	}
 	++i;
+	s_n = 0;
+	e_n = 0;
 	while (i < ac)
 	{
 		arr = ft_strsplit(av[i], '-');
@@ -362,28 +445,37 @@ int			main(int ac, char *av[])
 		tmp1 = avl_find(root, arr[0], &ft_strcmp);
 		tmp2 = avl_find(root, arr[1], &ft_strcmp);
 		free(arr);
-		tmp = new_node(tmp1->name, new_edge(tmp1));
+		if (tmp1 == start || tmp2 == start)
+			++s_n;
+		if (tmp1 == end || tmp2 == end)
+			++e_n;
+		state = new_state();
+		tmp = new_node(tmp1->name, new_edge(tmp1, state));
 		tmp2->c.room.edges = avl_insert(tmp2->c.room.edges, tmp, &ft_strcmp);
-		tmp = new_node(tmp2->name, new_edge(tmp2));
+		tmp = new_node(tmp2->name, new_edge(tmp2, state));
 		tmp1->c.room.edges = avl_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
 		++i;
 	}
-	avl_infix(root, &print_room);
+	max_paths = (s_n < e_n) ? (s_n) : (e_n);
+	if (!(sols = malloc(max_paths * sizeof(t_ctnr *))))
+		ft_exit();
 	printf("ants  = %d\n", n);
 	printf("start = %s\n", start ? start->name : NULL);
 	printf("end   = %s\n", end ? end->name : NULL);
-	se_treatment(start, end);// ubrat' treatment, prosto ne sozdavat' lishniye svyazi dlya start & end
-	ctnr_push_bot(start->c.room.froms, new_elem(start));// ubrat' kogda pofikshu se_treatment
-	not_dijkstra(start);
-	free(ctnr_pop_top(start->c.room.froms));// ubrat' kogda pofikshu se_treatment
-	print_paths(end);
-	path_invert(end); // segfault, need to fix
 	avl_infix(root, &print_room);
-	avl_infix(root, &node_re);
-	ctnr_push_bot(start->c.room.froms, new_elem(start));// ubrat' kogda pofikshu se_treatment
-	not_dijkstra(start);
-	free(ctnr_pop_top(start->c.room.froms));// ubrat' kogda pofikshu se_treatment
-	print_paths(end);
+	i = 0;
+	while (i < max_paths)
+	{
+		printf("%d:\n", i);
+		ctnr_push_top(start->c.room.froms, new_elem(NULL));
+		not_dijkstra(start);
+		free(ctnr_pop_top(start->c.room.froms));
+		path_invert(end);
+		sols[i] = find_paths(start, end);
+		print_paths(sols[i]);
+		reset(start);
+		++i;
+	}
 	return (0);
 }
 /*

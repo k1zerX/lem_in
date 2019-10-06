@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/15 20:40:40 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/16 00:27:12 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/07 00:10:54 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 typedef struct	s_node		t_node;
 typedef struct	s_edge		t_edge;
+typedef struct	s_state		t_state;
 typedef struct	s_room		t_room;
 typedef union	u_content	t_content;
 typedef enum	e_type		t_type;
@@ -34,10 +35,17 @@ enum						e_type
 	EDGE
 };
 */
+struct						s_state
+{
+	char					weight;
+	unsigned char			is_active : 1;
+};
+	
 struct						s_edge
 {
 	t_node					*room;
-	char					weight;
+	t_state					*state;
+	unsigned char			existance : 1;
 };
 
 struct						s_room

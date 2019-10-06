@@ -6,10 +6,10 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 17:30:20 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/24 21:38:24 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/06 22:12:11 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+/*
 #include "lem-in.h"
 
 void	ft_error(char *str)
@@ -106,4 +106,4 @@ int		main(int ac, char **av)
 	//algorithm();
 	//put_solution();
 	return (0);
-}
+}*/
