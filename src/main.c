@@ -31,6 +31,13 @@ char	*g_str_err[LEN] =
 	[VALID_ERR] = "fuck\n",
 };
 */
+typedef struct	s_path
+{
+	t_ctnr		*path;
+	char		len;	// sdelat; int
+	char		ants;	// sdelat' int
+}				t_path;
+
 void		ft_exit(void)
 {
 	exit(1);
@@ -66,6 +73,7 @@ t_state		*new_state(void)
 		ft_exit();
 	state->weight = 1;
 	state->is_active = 1;
+	state->cross = 0;
 	return (state);
 }
 
@@ -148,6 +156,49 @@ void		reset(t_node *start)
 	}
 }
 
+void		all_not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from, t_node *start, int *len)
+{
+	t_node	*room;
+
+	if (!root)
+		return ;
+	all_not_dijkstra_suffix(root->left, queue, from, start, len);
+	all_not_dijkstra_suffix(root->right, queue, from, start, len);
+	if (!root->c.edge.existance || !root->c.edge.state->is_active || root->c.edge.state->cross == 2)
+		return ;
+	root->c.edge.state->is_active = 0;
+	room = root->c.edge.room;
+	if (room == start)
+	{
+		if (*len)
+		{
+			ctnr_push_bot(room->c.room.froms, new_elem(from));
+			--*len;
+		}
+	}
+	else if (!room->c.room.froms->top)
+		ctnr_push_bot(room->c.room.froms, new_elem(from));
+	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_node), 0));
+}
+
+void	all_not_dijkstra(t_node *start, t_node *end, int len)
+{
+	t_queue		*queue;
+	t_sq_elem	*tmp;
+
+//	printf("distance from start:\n");
+	queue = ft_queue_new();
+	ft_queue_push(queue, ft_new_sq_elem(end, sizeof(t_node), 0));
+	while (queue->len)
+	{
+		tmp = ft_queue_pop(queue);
+		end = (t_node *)tmp->content;
+		all_not_dijkstra_suffix(end->c.room.edges, queue, end, start, &len);
+//		printf("\t%s: %d\n", end->name, end->c.room.distance);
+		free(tmp);
+	}
+}
+
 void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
 {
 	t_node	*room;
@@ -157,34 +208,20 @@ void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
 		return ;
 	not_dijkstra_suffix(root->left, queue, from);
 	not_dijkstra_suffix(root->right, queue, from);
-	if (!root->c.edge.existance || !root->c.edge.state->is_active)
+	if (!root->c.edge.existance || !root->c.edge.state->is_active || root->c.edge.state->cross == 2)
 		return ;
 	root->c.edge.state->is_active = 0;
 	room = root->c.edge.room;
-//	printf("%s\n", root->name);
-//	printf("%p\n", room);
 	buf = from->c.room.distance + root->c.edge.state->weight;
 	if (room->c.room.froms->top)
 	{
-//	printf("%s %d vs %d\n", room->name, room->c.room.distance, buf);
 		if (room->c.room.distance > buf)
-		{
-			room->c.room.distance = buf;
 			ctnr_clear(room->c.room.froms, &del_elem);
-			ctnr_push_bot(room->c.room.froms, new_elem(from));
-		}
-		else if (room->c.room.distance == buf)
-			ctnr_push_bot(room->c.room.froms, new_elem(from));
 		else
 			return ;
-//	printf("before\n");
-//	printf("after\n");
 	}
-	else
-	{
-		room->c.room.distance = buf;
-		ctnr_push_bot(room->c.room.froms, new_elem(from));
-	}
+	room->c.room.distance = buf;
+	ctnr_push_bot(room->c.room.froms, new_elem(from));
 	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_node), 0));
 }
 
@@ -193,6 +230,7 @@ void	not_dijkstra(t_node *start)
 	t_queue		*queue;
 	t_sq_elem	*tmp;
 
+//	printf("distance from start:\n");
 	start->c.room.distance = 0;
 	queue = ft_queue_new();
 	ft_queue_push(queue, ft_new_sq_elem(start, sizeof(t_node), 0));
@@ -200,20 +238,37 @@ void	not_dijkstra(t_node *start)
 	{
 		tmp = ft_queue_pop(queue);
 		start = (t_node *)tmp->content;
-//		printf("%s: %d\n", start->name, start->c.room.distance);
 		not_dijkstra_suffix(start->c.room.edges, queue, start);
+//		printf("\t%s: %d\n", start->name, start->c.room.distance);
 		free(tmp);
 	}
 }
 
-void		print_paths(t_ctnr *path)
+void		print_path(t_path path)
 {
 	t_elem	*tmp;
-	tmp = path->top;
-	while (tmp)
+
+	tmp = path.path->top;
+	if (tmp)
 	{
-		printf("\t%s\n", ((t_node *)tmp->node)->name);
-		tmp = tmp->next;
+		printf("\t%d to %d: ", path.ants, path.len);
+		while (tmp->next)
+		{
+			printf("%s -> ", tmp->node->name);
+			tmp = tmp->next;
+		}
+		printf("%s\n", tmp->node->name);
+	}
+}
+
+void		print_paths(t_node *start, t_path *paths, int len)
+{
+	(void)start;
+	while (len)
+	{
+		print_path(*paths);
+		++paths;
+		--len;
 	}
 }
 
@@ -223,6 +278,7 @@ void		edge_reverse(t_node *node, t_node *prev)
 
 	edge = avl_find(node->c.room.edges, prev->name, &ft_strcmp);
 	edge->c.edge.state->weight *= -1;
+	++edge->c.edge.state->cross;
 	edge->c.edge.existance = 0;
 	edge = avl_find(prev->c.room.edges, node->name, &ft_strcmp);
 	edge->c.edge.existance = 1;
@@ -382,21 +438,42 @@ int			main(void)
 }
 */
 
-t_ctnr		*find_paths(t_node *start, t_node *end)
+void		find_paths(t_node *start, t_node *end, t_path **sols, int len)
 {
-	t_ctnr	*tmp;
+	t_path	*tmp;
+	t_elem	*buf;
+	t_node	*node;
 
+	if (!(*sols = malloc((len) * sizeof(t_path))))
+		ft_exit();
+	tmp = *sols;
 	reset(start);
-	not_dijkstra(end);
-	tmp = start->c.room.froms;
-	start->c.room.froms = ctnr_new();
-	return (tmp);
+	all_not_dijkstra(start, end, len);
+	while (len)
+	{
+		tmp->path = ctnr_new();
+		tmp->len = 1;
+		ctnr_push_bot(tmp->path, new_elem(start));
+		buf = ctnr_pop_top(start->c.room.froms);
+		node = buf->node;
+		while (node->c.room.froms->top)
+		{
+			ctnr_push_bot(tmp->path, new_elem(node));
+			++tmp->len;
+			node = node->c.room.froms->top->node;
+		}
+		ctnr_push_bot(tmp->path, new_elem(node));
+		free(buf);
+		++tmp;
+		--len;
+	}
 }
 
 int			main(int ac, char *av[])
 {
 	t_node	*root;
 	int		i;
+	int		j;
 	char	**arr;
 	t_node	*tmp;
 	t_node	*tmp1;
@@ -404,14 +481,18 @@ int			main(int ac, char *av[])
 	t_node	*start;
 	t_node	*end;
 	int		n;
+	int		ants;
 	int		max_paths;
 	int		s_n;
 	int		e_n;
 	t_state *state;
-	t_ctnr	**sols;
+	t_path	**sols;
+	t_path	*paths;
+	int		div;
+	int		mod;
 
 	if (ac > 1)
-		n = ft_atoi(av[1]);
+		ants = ft_atoi(av[1]);
 	i = 2;
 	start = NULL;
 	end = NULL;
@@ -457,25 +538,72 @@ int			main(int ac, char *av[])
 		++i;
 	}
 	max_paths = (s_n < e_n) ? (s_n) : (e_n);
-	if (!(sols = malloc(max_paths * sizeof(t_ctnr *))))
+	if (!(sols = malloc(max_paths * sizeof(t_path *))))
 		ft_exit();
-	printf("ants  = %d\n", n);
+	printf("ants  = %d\n", ants);
 	printf("start = %s\n", start ? start->name : NULL);
 	printf("end   = %s\n", end ? end->name : NULL);
-	avl_infix(root, &print_room);
-	i = 0;
-	while (i < max_paths)
+//	avl_infix(root, &print_room);
+	i = 1;
+	while (i <= max_paths)
 	{
 		printf("%d:\n", i);
 		ctnr_push_top(start->c.room.froms, new_elem(NULL));
 		not_dijkstra(start);
 		free(ctnr_pop_top(start->c.room.froms));
 		path_invert(end);
-		sols[i] = find_paths(start, end);
-		print_paths(sols[i]);
+		find_paths(start, end, sols, i);
+		paths = *sols + 1;
+		n = ants;
+		j = 1;
+		while (j < i)
+		{
+			(paths - 1)->ants = paths->len - (paths - 1)->len;
+			n -= (paths - 1)->ants * j;
+			div = n / j;
+			mod = n % j;
+			if (n <= 0 || div == 0 || (div == 1 && mod == 0))
+			{
+				n += (paths - 1)->ants * j;
+				(paths - 1)->ants = 0;
+				break ;
+			}
+			++paths;
+			++j;
+//			if (div == 0 || (div == 1 && mod == 0))
+//				break ;
+		}
+		printf("%d %d", j, i);
+		if (j == i)
+			n += (paths - 1)->ants * j;
+		div = n / j;
+		mod = n % j;
+		printf("\t%d * %d + %d\n", j, div, mod);
+		--paths;
+		--j;
+		int		buf = 0;
+		while (j >= mod)
+		{
+			paths->ants += buf;
+			buf = paths->ants;
+			paths->ants += div;
+			--j;
+			--paths;
+		}
+		while (j >= 0)
+		{
+			paths->ants += buf;
+			buf = paths->ants;
+			paths->ants += div + 1;
+			--j;
+			--paths;
+		}
+		print_paths(start, *sols, i);
 		reset(start);
+		++sols;
 		++i;
 	}
+	sols -= max_paths;
 	return (0);
 }
 /*

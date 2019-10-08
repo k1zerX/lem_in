@@ -39,6 +39,7 @@ struct						s_state
 {
 	char					weight;
 	unsigned char			is_active : 1;
+	unsigned char			cross : 2;
 };
 	
 struct						s_edge
