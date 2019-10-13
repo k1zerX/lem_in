@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/07 00:44:25 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/13 18:09:20 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -555,6 +555,7 @@ int			main(int ac, char *av[])
 		find_paths(start, end, sols, i);
 		paths = *sols + 1;
 		n = ants;
+		(paths - 1)->ants = 0;
 		j = 1;
 		while (j < i)
 		{
@@ -570,14 +571,15 @@ int			main(int ac, char *av[])
 			}
 			++paths;
 			++j;
-//			if (div == 0 || (div == 1 && mod == 0))
-//				break ;
 		}
-		printf("%d %d", j, i);
 		if (j == i)
+		{
 			n += (paths - 1)->ants * j;
+			(paths - 1)->ants = 0;
+		}
 		div = n / j;
 		mod = n % j;
+		printf("%d| %d %d", n, j, i);
 		printf("\t%d * %d + %d\n", j, div, mod);
 		--paths;
 		--j;
