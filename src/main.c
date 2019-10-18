@@ -31,12 +31,30 @@ char	*g_str_err[LEN] =
 	[VALID_ERR] = "fuck\n",
 };
 */
-typedef struct	s_path
+
+typedef struct	s_path	t_path;
+typedef struct	s_ants	t_ants;
+typedef struct	s_ant	t_ant;
+
+struct					s_path
 {
-	t_ctnr		*path;
-	char		len;	// sdelat; int
-	char		ants;	// sdelat' int
-}				t_path;
+	t_ctnr				*path;
+	char				len;	// sdelat; int
+	char				ants;	// sdelat' int
+};
+
+struct					s_ants
+{
+	t_ant				*start;
+	t_ant				*end;
+};
+
+struct					s_ant
+{
+	t_elem				*room;
+	t_ant				*next;
+	int					ind;
+};
 
 void		ft_exit(void)
 {
@@ -469,6 +487,61 @@ void		find_paths(t_node *start, t_node *end, t_path **sols, int len)
 	}
 }
 
+void		add_ant(t_ants *ingame, t_elem *start)
+{
+	t_ant		*ant;
+	static int	i = 1;
+
+	if (!(ant = malloc(sizeof(t_ant))))
+		ft_exit();
+	ant->next = NULL;
+	ant->room = start;
+	ant->ind = i;
+	++i;
+	if (ingame->end)
+		ingame->end->next = ant;
+	else
+		ingame->start = ant;
+	ingame->end = ant;
+}
+
+void		move_ants(t_ants *ingame)
+{
+	t_ant	*tmp;
+	t_ant	*prev;
+
+	tmp = ingame->start;
+	prev = NULL;
+	while (tmp)
+	{
+//		printf("before:\n");
+		tmp->room = tmp->room->next;
+		printf("L%d-%s ", tmp->ind, tmp->room->node->name);
+		if (!tmp->room->next)
+		{
+			if (prev)
+			{
+				prev->next = tmp->next;
+				free(tmp);
+				tmp = prev->next;
+			}
+			else
+			{
+				ingame->start = tmp->next;
+				free(tmp);
+				tmp = ingame->start;
+			}
+		}
+		else
+		{
+			prev = tmp;
+			tmp = prev->next;
+		}
+//		printf("after:\n");
+	}
+	printf("\n");
+}
+
 int			main(int ac, char *av[])
 {
 	t_node	*root;
@@ -490,6 +563,9 @@ int			main(int ac, char *av[])
 	t_path	*paths;
 	int		div;
 	int		mod;
+	int		min;
+	int		ind;
+	t_ants	ingame;
 
 	if (ac > 1)
 		ants = ft_atoi(av[1]);
@@ -544,6 +620,7 @@ int			main(int ac, char *av[])
 	printf("start = %s\n", start ? start->name : NULL);
 	printf("end   = %s\n", end ? end->name : NULL);
 //	avl_infix(root, &print_room);
+	min = -1;
 	i = 1;
 	while (i <= max_paths)
 	{
@@ -579,8 +656,6 @@ int			main(int ac, char *av[])
 		}
 		div = n / j;
 		mod = n % j;
-		printf("%d| %d %d", n, j, i);
-		printf("\t%d * %d + %d\n", j, div, mod);
 		--paths;
 		--j;
 		int		buf = 0;
@@ -601,11 +676,39 @@ int			main(int ac, char *av[])
 			--paths;
 		}
 		print_paths(start, *sols, i);
+		if ((*sols)->ants + (*sols)->len - 1 < min || min == -1)
+		{
+			min = (*sols)->ants + (*sols)->len - 1;
+			ind = i;
+		}
 		reset(start);
 		++sols;
 		++i;
 	}
 	sols -= max_paths;
+	sols += ind - 1;
+	(void)ind;
+	printf("\n");
+	ingame = (t_ants){NULL, NULL};
+	i = 0;
+	while (i < min)
+	{
+		j = 0;
+		while (j < ind)
+		{
+			if ((*sols)[j].ants > 0)
+			{
+				add_ant(&ingame, (*sols)[j].path->top);
+				--(*sols)[j].ants;
+			}
+			++j;
+		}
+//	printf("before:\n");
+		move_ants(&ingame);
+//	printf("after:\n");
+		++i;
+	}
+	sols -= ind - 1;
 	return (0);
 }
 /*
