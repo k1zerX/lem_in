@@ -6,7 +6,7 @@
 #    By: kbatz <marvin@42.fr>                       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/12/25 21:10:51 by kbatz             #+#    #+#              #
-#    Updated: 2019/09/13 22:51:48 by kbatz            ###   ########.fr        #
+#    Updated: 2019/10/20 23:39:16 by kbatz            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ HDR		= $(wildcard $(HDRDIR)*.h)
 TEST	= $(patsubst $(TESTDIR)%,%,$(wildcard $(TESTDIR)*))
 LFLAG	= $(addprefix -L,$(LIBDIR)) $(addprefix -,$(patsubst lib%,l%,$(LIB)))
 IFLAG	= $(addprefix -I,$(HDRDIR)) $(addprefix -I,$(LIBDIR))
-CFLAG	= -Wall -Wextra -Werror
+CFLAG	= #-Wall -Wextra -Werror
 CC		= gcc
 
 # **************************************************************************** #

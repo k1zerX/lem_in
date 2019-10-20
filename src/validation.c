@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 17:30:20 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/16 21:06:57 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/20 23:48:57 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "gnl.h"
 
 #include <stdio.h>
-
+/*
 void		ft_exit(char *str)
 {
 	write(1, "\e[38;05;196m", 12);
@@ -180,10 +180,10 @@ t_node		*init_node(t_node **start, t_node **end, char *str, int *is_start)
 	name = ft_strncpy(name, str, i);// i + 1???
 	name[i] = '\0';
 	node = new_node(name, new_room());
-	node->x = ft_atoi(str + i);
+//	node->x = ft_atoi(str + i);
 	while (str[i + 1] != ' ')
 		i++;
-	node->y = ft_atoi(str + i + 1);
+//	node->y = ft_atoi(str + i + 1);
 	if (*is_start == 1 || *is_start == -1)
 	{
 		*start = (*is_start == 1) ? node : *start;
@@ -243,4 +243,4 @@ int			main()
 	max_paths = 0;
 	root = is_valid_map(&start, &end, &ants, &max_paths);
 	
-}
+}*/

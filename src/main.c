@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/13 18:09:20 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/20 23:48:58 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ struct					s_ant
 	int					ind;
 };
 
-void		ft_exit(void)
+void		ft_fucking_exit(void)
 {
 	exit(1);
 }
@@ -66,7 +66,7 @@ t_node		*new_node(T_AVL_KEY key, t_content c)
 	t_node	*tmp;
 
 	if (!(tmp = malloc(sizeof(t_node))))
-		ft_exit();
+		ft_fucking_exit();
 	tmp->name = key;
 	tmp->left = NULL;
 	tmp->right = NULL;
@@ -88,10 +88,11 @@ t_state		*new_state(void)
 	t_state		*state;
 
 	if (!(state = malloc(sizeof(t_state))))
-		ft_exit();
+		ft_fucking_exit();
 	state->weight = 1;
 	state->is_active = 1;
 	state->cross = 0;
+	state->is_deleted = 0;
 	return (state);
 }
 
@@ -162,6 +163,7 @@ void		reset(t_node *start)
 	t_queue		*queue;
 	t_sq_elem	*tmp;
 
+//printf("before:\n");
 	queue = ft_queue_new();
 	ft_queue_push(queue, ft_new_sq_elem(start, sizeof(t_node), 0));
 	while (queue->len)
@@ -172,6 +174,7 @@ void		reset(t_node *start)
 		reset_suffix(start->c.room.edges, queue);
 		free(tmp);
 	}
+//printf("after:\n");
 }
 
 void		all_not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from, t_node *start, int *len)
@@ -182,7 +185,8 @@ void		all_not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from, t_node
 		return ;
 	all_not_dijkstra_suffix(root->left, queue, from, start, len);
 	all_not_dijkstra_suffix(root->right, queue, from, start, len);
-	if (!root->c.edge.existance || !root->c.edge.state->is_active || root->c.edge.state->cross == 2)
+	if (!root->c.edge.existance || !root->c.edge.state->is_active || \
+			root->c.edge.state->cross == 2 || root->c.edge.state->is_deleted)
 		return ;
 	root->c.edge.state->is_active = 0;
 	room = root->c.edge.room;
@@ -226,7 +230,8 @@ void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
 		return ;
 	not_dijkstra_suffix(root->left, queue, from);
 	not_dijkstra_suffix(root->right, queue, from);
-	if (!root->c.edge.existance || !root->c.edge.state->is_active || root->c.edge.state->cross == 2)
+	if (!root->c.edge.existance || !root->c.edge.state->is_active || \
+			root->c.edge.state->cross == 2 || root->c.edge.state->is_deleted)
 		return ;
 	root->c.edge.state->is_active = 0;
 	room = root->c.edge.room;
@@ -257,7 +262,7 @@ void	not_dijkstra(t_node *start)
 		tmp = ft_queue_pop(queue);
 		start = (t_node *)tmp->content;
 		not_dijkstra_suffix(start->c.room.edges, queue, start);
-//		printf("\t%s: %d\n", start->name, start->c.room.distance);
+		printf("\t%s: %d\n", start->name, start->c.room.distance);
 		free(tmp);
 	}
 }
@@ -302,36 +307,103 @@ void		edge_reverse(t_node *node, t_node *prev)
 	edge->c.edge.existance = 1;
 }
 
-void		path_invert_rec(t_node *node, t_node *prev)
+t_state		*disconnect(t_node *a, t_node *b)
 {
-	t_elem	*next;
-//	t_node	*out;
+	t_state		*state;
+	t_node		*tmp;
 
-	(void)prev;
-/*	printf("%s\n", node->name);
-	printf("\t%p\n", node);
-	printf("\t%p\n", node->c.room.froms);
-	printf("\t%p\n", node->c.room.froms->top);
-	printf("\t%p\n", node->c.room.froms->top->node);*/
-	next = node->c.room.froms->top;
+	tmp = avl_find(a->c.room.edges, b->name, &ft_strcmp);
+	state = tmp->c.edge.state;
+	a->c.room.edges = avl_remove(a->c.room.edges, b->name, &ft_strcmp);
+	b->c.room.edges = avl_remove(b->c.room.edges, a->name, &ft_strcmp);
+	return (state);
+}
+
+void		connect(t_node *a, t_node *b, t_state *state)
+{
+	t_content	edge;
+
+	edge = new_edge(b, state);
+//	edge.existance = existance;
+	a->c.room.edges = avl_insert(a->c.room.edges, \
+			new_node(b->name, edge), &ft_strcmp);
+}
+
+t_state		*node_division(t_node *next, t_node *node, t_node *prev, t_state *state_prev)
+{
+	t_node		*out;
+	t_state		*state_next;
+	t_state		*state;
+
+	state_next = disconnect(node, next);
+	out = new_node(node->name, new_room());
+	out->c.room.edges = node->c.room.edges;
+	node->c.room.edges = NULL;
+	connect(prev, out, state_prev);
+	state = new_state();
+	state->weight = 0;
+	connect(out, node, state);
+	return (state_next);
+/*	tmp = avl_find(node->c.room.edges, prev->name, &ft_strcmp);
+	tmp->c.edge.state->is_deleted = 1;
+
+
+	state = tmp->c.edge.state;
+	tmp = new_node(out->name, new_edge(out, state));
+	prev->c.room.edges = avl_insert(prev->c.room.edges, tmp, &ft_strcmp);
+	edge = new_edge(prev, state);
+	edge.edge.existance = 0;
+	tmp = new_node(prev->name, edge);
+	out->c.room.edges = avl_insert(out->c.room.edges, tmp, &ft_strcmp);
+
+	state = new_state();
+	state->weight = 0;
+	tmp = new_node(node->name, new_edge(node, state));
+	out->c.room.edges = avl_insert(out->c.room.edges, tmp, &ft_strcmp);
+	edge = new_edge(out, state);
+	edge.edge.existance = 0;
+	tmp = new_node(out->name, edge);
+	node->c.room.edges = avl_insert(node->c.room.edges, tmp, &ft_strcmp);*/
+}
+
+void		all_path_invert(t_node *end)
+{
+	t_elem		*next;
+
+	next = end->c.room.froms->top;
 	if (!next)
 		return ;
-//	out = new_node(av[i], new_room());
-//	out->c.room.edges = node->c.room.edges;
-//	node->c.room.edges = NULL;
+	edge_reverse(next->node, end);
+	all_path_invert(next->node);
+}
+
+void		path_invert_rec(t_node *node, t_node *prev, t_state *state)
+{
+	t_elem		*next;
+
+	next = node->c.room.froms->top;
+	if (!next)
+	{
+		connect(prev, node, state);
+		return ;
+	}
 	edge_reverse(next->node, node);
-	path_invert_rec(next->node, node);
+	state = node_division(next->node, node, prev, state);
+	path_invert_rec(next->node, node, state);
+//	node->c.room.edges = NULL;
 }
 
 void		path_invert(t_node *end)
 {
-	t_node	*tmp;
+	t_node		*tmp;
+	t_state		*state;
 
 	tmp = end->c.room.froms->top->node;
 	if (!tmp)
 		return ;
 	edge_reverse(tmp, end);
-	path_invert_rec(tmp, end);
+	state = disconnect(end, tmp);
+	path_invert_rec(tmp, end, state);
 }
 /*
 void		path_invert_rec(t_node *node, t_node *from) seychas eto recursiya no luchshe sdelat' ochered' \
@@ -422,7 +494,7 @@ t_node		*init(int *ants)
 	char	**arr;
 
 	if ((n = gnl(0, &str) < 0))
-		ft_exit();
+		ft_fucking_exit();
 	ants = atoi(str);
 	free(str);
 	flag = 0;
@@ -444,7 +516,7 @@ t_node		*init(int *ants)
 		free(str);
 	}
 	if (n < 0)
-		ft_exit();
+		ft_fucking_exit();
 }
 
 int			main(void)
@@ -463,17 +535,21 @@ void		find_paths(t_node *start, t_node *end, t_path **sols, int len)
 	t_node	*node;
 
 	if (!(*sols = malloc((len) * sizeof(t_path))))
-		ft_exit();
+		ft_fucking_exit();
 	tmp = *sols;
 	reset(start);
 	all_not_dijkstra(start, end, len);
+	all_path_invert(start);
+	reset(start);
 	while (len)
 	{
 		tmp->path = ctnr_new();
 		tmp->len = 1;
 		ctnr_push_bot(tmp->path, new_elem(start));
 		buf = ctnr_pop_top(start->c.room.froms);
+//		printf("before: %p\n", buf);
 		node = buf->node;
+//		printf("after:\n");
 		while (node->c.room.froms->top)
 		{
 			ctnr_push_bot(tmp->path, new_elem(node));
@@ -493,7 +569,7 @@ void		add_ant(t_ants *ingame, t_elem *start)
 	static int	i = 1;
 
 	if (!(ant = malloc(sizeof(t_ant))))
-		ft_exit();
+		ft_fucking_exit();
 	ant->next = NULL;
 	ant->room = start;
 	ant->ind = i;
@@ -541,6 +617,8 @@ void		move_ants(t_ants *ingame)
 	}
 	printf("\n");
 }
+
+t_node		*is_valid_map(t_node **start, t_node **end, int *ants, int *max_paths);
 
 int			main(int ac, char *av[])
 {
@@ -615,7 +693,7 @@ int			main(int ac, char *av[])
 	}
 	max_paths = (s_n < e_n) ? (s_n) : (e_n);
 	if (!(sols = malloc(max_paths * sizeof(t_path *))))
-		ft_exit();
+		ft_fucking_exit();
 	printf("ants  = %d\n", ants);
 	printf("start = %s\n", start ? start->name : NULL);
 	printf("end   = %s\n", end ? end->name : NULL);
@@ -643,7 +721,7 @@ int			main(int ac, char *av[])
 			if (n <= 0 || div == 0 || (div == 1 && mod == 0))
 			{
 				n += (paths - 1)->ants * j;
-				(paths - 1)->ants = 0;
+				(paths - 1)->ants = 0; // vynesti za cycle
 				break ;
 			}
 			++paths;

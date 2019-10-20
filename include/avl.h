@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/15 20:40:40 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/07 00:10:54 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/20 23:48:58 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,16 @@ enum						e_type
 struct						s_state
 {
 	char					weight;
-	unsigned char			is_active : 1;
-	unsigned char			cross : 2;
+	unsigned char			is_active	: 1;
+	unsigned char			cross		: 2;
+	unsigned char			is_deleted	: 1;
 };
 	
 struct						s_edge
 {
 	t_node					*room;
 	t_state					*state;
-	unsigned char			existance : 1;
+	unsigned char			existance	: 1;
 };
 
 struct						s_room
