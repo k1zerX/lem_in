@@ -402,6 +402,8 @@ void		path_invert(t_node *end)
 	if (!tmp)
 		return ;
 	edge_reverse(tmp, end);
+	printf("before:\n");
+	printf("after:\n");
 	state = disconnect(end, tmp);
 	path_invert_rec(tmp, end, state);
 }
