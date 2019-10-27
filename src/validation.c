@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 17:30:20 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/20 23:48:57 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/25 20:23:02 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,9 @@
 #include "gnl.h"
 
 #include <stdio.h>
-/*
+
 void		ft_exit(char *str)
 {
-	write(1, "\e[38;05;196m", 12);
 	ft_putendl(str);
 	exit(1);
 }
@@ -87,11 +86,11 @@ char *find_name(char *str)
 
 void	print_nodes_test(t_node *root, t_node *start, t_node *end, int ants, int max_paths)
 {
-	printf("root: %s, %.1f, %.1f\n", root->name, root->x, root->y);
-	printf("root left: %s, %.1f, %.1f\n", root->left->name, root->left->x, root->left->y);
-	printf("root right: %s, %.1f, %.1f\n", root->right->name, root->right->x, root->right->y);
-	printf("start: %s, %.1f, %.1f\n", start->name, start->x, start->y);
-	printf("end: %s, %.1f, %.1f\n", end->name, end->x, end->y);
+	printf("root: %s\n", root->name);
+	printf("root left: %s\n", root->left->name);
+	printf("root right: %s\n", root->right->name);
+	printf("start: %s\n", start->name);
+	printf("end: %s\n", end->name);
 	printf("ants = %d, max paths = %d\n", ants, max_paths);
 
 }
@@ -225,7 +224,7 @@ t_node		*is_valid_map(t_node **start, t_node **end, int *ants, int *max_paths)
 	}
 	if (!*max_paths)
 		ft_exit("there is no edges");
-	// print_nodes_and_edges(root, *start, *end, *ants, *max_paths);
+	print_nodes_test(root, *start, *end, *ants, *max_paths);
 	return (root);
 }
 
@@ -243,4 +242,4 @@ int			main()
 	max_paths = 0;
 	root = is_valid_map(&start, &end, &ants, &max_paths);
 	
-}*/
+}
