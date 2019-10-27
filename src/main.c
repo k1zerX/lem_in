@@ -83,7 +83,7 @@ t_content	new_room(void)
 	return (c);
 }
 
-t_state		*new_state(void)
+t_state		*new_state(t_node *a, t_node *b)
 {
 	t_state		*state;
 
@@ -93,6 +93,8 @@ t_state		*new_state(void)
 	state->is_active = 1;
 	state->cross = 0;
 	state->is_deleted = 0;
+	state->rooms[0] = a;
+	state->rooms[1] = b;
 	return (state);
 }
 
@@ -330,7 +332,7 @@ void		connect(t_node *a, t_node *b, t_state *state)
 }
 
 t_state		*node_division(t_node *next, t_node *node, t_node *prev, t_state *state_prev)
-{
+{/*
 	t_node		*out;
 	t_state		*state_next;
 	t_state		*state;
@@ -343,7 +345,7 @@ t_state		*node_division(t_node *next, t_node *node, t_node *prev, t_state *state
 	state = new_state();
 	state->weight = 0;
 	connect(out, node, state);
-	return (state_next);
+	return (state_next);*/
 /*	tmp = avl_find(node->c.room.edges, prev->name, &ft_strcmp);
 	tmp->c.edge.state->is_deleted = 1;
 
@@ -541,8 +543,8 @@ void		find_paths(t_node *start, t_node *end, t_path **sols, int len)
 	tmp = *sols;
 	reset(start);
 	all_not_dijkstra(start, end, len);
-	all_path_invert(start);
-	reset(start);
+//	all_path_invert(start);
+//	reset(start);
 	while (len)
 	{
 		tmp->path = ctnr_new();
@@ -686,10 +688,15 @@ int			main(int ac, char *av[])
 			++s_n;
 		if (tmp1 == end || tmp2 == end)
 			++e_n;
-		state = new_state();
-		tmp = new_node(tmp1->name, new_edge(tmp1, state));
+		t_content edge;
+		state = new_state(tmp1, tmp2);
+		edge = new_edge(tmp1, state);
+		edge.edge.n = 1;
+		tmp = new_node(tmp1->name, edge);
 		tmp2->c.room.edges = avl_insert(tmp2->c.room.edges, tmp, &ft_strcmp);
-		tmp = new_node(tmp2->name, new_edge(tmp2, state));
+		edge = new_edge(tmp2, state);
+		edge.edge.n = 0;
+		tmp = new_node(tmp2->name, edge);
 		tmp1->c.room.edges = avl_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
 		++i;
 	}
@@ -712,18 +719,18 @@ int			main(int ac, char *av[])
 		find_paths(start, end, sols, i);
 		paths = *sols + 1;
 		n = ants;
-		(paths - 1)->ants = 0;
+		paths[-1].ants = 0;
 		j = 1;
 		while (j < i)
 		{
-			(paths - 1)->ants = paths->len - (paths - 1)->len;
-			n -= (paths - 1)->ants * j;
+			paths[-1].ants = paths->len - paths[-1].len;
+			n -= paths[-1].ants * j;
 			div = n / j;
 			mod = n % j;
 			if (n <= 0 || div == 0 || (div == 1 && mod == 0))
 			{
-				n += (paths - 1)->ants * j;
-				(paths - 1)->ants = 0; // vynesti za cycle
+				n += paths[-1].ants * j;
+				paths[-1].ants = 0; // vynesti za cycle
 				break ;
 			}
 			++paths;
@@ -731,8 +738,8 @@ int			main(int ac, char *av[])
 		}
 		if (j == i)
 		{
-			n += (paths - 1)->ants * j;
-			(paths - 1)->ants = 0;
+			n += paths[-1].ants * j;
+			paths[-1].ants = 0;
 		}
 		div = n / j;
 		mod = n % j;

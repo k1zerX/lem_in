@@ -34,20 +34,13 @@ enum						e_type
 	ROOM,
 	EDGE
 };
-*/
-struct						s_state
-{
-	char					weight;
-	unsigned char			is_active	: 1;
-	unsigned char			cross		: 2;
-	unsigned char			is_deleted	: 1;
-};
-	
+*/	
 struct						s_edge
 {
 	t_node					*room;
 	t_state					*state;
 	unsigned char			existance	: 1;
+	unsigned char			n			: 1;
 };
 
 struct						s_room
@@ -70,6 +63,15 @@ struct						s_node
 	t_node					*left;
 	t_node					*right;
 	unsigned char			height;
+};
+
+struct						s_state
+{
+	char					weight;
+	unsigned char			is_active	: 1;
+	unsigned char			cross		: 2;
+	unsigned char			is_deleted	: 1;
+	t_node					*rooms[2];
 };
 
 t_node						*avl_balance(t_node *node);
