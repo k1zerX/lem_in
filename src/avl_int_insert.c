@@ -1,31 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   avl_insert.c                                       :+:      :+:    :+:   */
+/*   avl_int_insert.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/11 21:28:01 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/11 23:43:22 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/29 19:26:08 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "avl.h"
 
-static t_avl_node	*avl_rec_ins(t_avl_node *tmp, t_avl_node *node, \
-		int (*cmp)(t_avl_node *a, t_avl_node *b))
+t_avl_int	*avl_int_insert(t_avl_int *root, t_avl_int *node, \
+		int (*cmp)(int a, int b))
 {
-	if (!tmp)
+	if (!root)
 		return (node);
-	if ((*cmp)(node, tmp) < 0)
-		tmp->left = avl_rec_ins(tmp->left, node, cmp);
+	if ((*cmp)(node->key, root->key) < 0)
+		root->left = avl_int_insert(root->left, node, cmp);
 	else
-		tmp->right = avl_rec_ins(tmp->right, node, cmp);
-	return (avl_balance(tmp));
-}
-
-void				avl_insert(t_avl_tree *tree, t_avl_node *node)
-{
-	tree->root = avl_rec_ins(tree->root, node, tree->cmp);
-	++tree->n;
+		root->right = avl_int_insert(root->right, node, cmp);
+	return (avl_int_balance(root));
 }

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_new_elem.c                                      :+:      :+:    :+:   */
+/*   ft_new_sq_elem.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,9 +12,9 @@
 
 #include "libft.h"
 
-t_elem		*ft_new_elem(void *content, size_t content_size, char copy)
+t_sq_elem		*ft_new_sq_elem(void *content, size_t content_size, char copy)
 {
-	t_elem		*tmp;
+	t_sq_elem		*tmp;
 
 	if (!(tmp = ft_memalloc(sizeof(*tmp))))
 		return (NULL);

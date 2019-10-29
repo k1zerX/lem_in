@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-void	ft_queue_push(t_queue *queue, t_elem *tmp)
+void	ft_queue_push(t_queue *queue, t_sq_elem *tmp)
 {
 	if (!tmp)
 		return ;

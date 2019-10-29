@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   avl_balance.c                                      :+:      :+:    :+:   */
+/*   avl_int_balance.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/11 23:24:00 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/13 21:47:19 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/29 19:26:11 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "avl.h"
 
-static char			bfactor(t_avl_node *node)
+static char		bfactor(t_avl_int *node)
 {
 	return (HEIGHT(node->right) - HEIGHT(node->left));
 }
 
-static void			fixheight(t_avl_node *node)
+static void		fixheight(t_avl_int *node)
 {
 	unsigned char	hl;
 	unsigned char	hr;
@@ -27,9 +27,9 @@ static void			fixheight(t_avl_node *node)
 	node->height = (hl > hr) ? (hl) : (hr) + 1;
 }
 
-static t_avl_node	*rotl(t_avl_node *node)
+static t_avl_int	*rotl(t_avl_int *node)
 {
-	t_avl_node	*tmp;
+	t_avl_int	*tmp;
 
 	tmp = node->right;
 	node->right = tmp->left;
@@ -39,9 +39,9 @@ static t_avl_node	*rotl(t_avl_node *node)
 	return (tmp);
 }
 
-static t_avl_node	*rotr(t_avl_node *node)
+static t_avl_int	*rotr(t_avl_int *node)
 {
-	t_avl_node	*tmp;
+	t_avl_int	*tmp;
 
 	tmp = node->left;
 	node->left = tmp->right;
@@ -51,7 +51,7 @@ static t_avl_node	*rotr(t_avl_node *node)
 	return (tmp);
 }
 
-t_avl_node			*avl_balance(t_avl_node *node)
+t_avl_int			*avl_int_balance(t_avl_int *node)
 {
 	char	b;
 

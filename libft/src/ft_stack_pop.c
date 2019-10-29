@@ -12,9 +12,9 @@
 
 #include "libft.h"
 
-t_elem		*ft_stack_pop(t_stack *stack)
+t_sq_elem		*ft_stack_pop(t_stack *stack)
 {
-	t_elem		*tmp;
+	t_sq_elem		*tmp;
 
 	if (!stack->len)
 		return (NULL);

@@ -1,26 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   avl_new_tree.c                                     :+:      :+:    :+:   */
+/*   avl_int_infix.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: etuffleb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/05/25 15:11:08 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/11 23:46:35 by kbatz            ###   ########.fr       */
+/*   Created: 2019/09/25 20:50:09 by etuffleb          #+#    #+#             */
+/*   Updated: 2019/10/29 19:26:09 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "avl.h"
 
-t_avl_tree	*avl_new_tree(int (*cmp)(t_avl_node *a, t_avl_node *b))
+void	avl_int_infix(t_avl_int *root, void (*f)(t_avl_int *root))
 {
-	t_avl_tree	*tmp;
-
-	if ((tmp = malloc(sizeof(*tmp))))
-	{
-		tmp->n = 0;
-		tmp->root = NULL;
-		tmp->cmp = cmp;
-	}
-	return (tmp);
+	if (!root)
+		return ;
+	avl_int_infix(root->left, f);
+	(*f)(root);
+	avl_int_infix(root->right, f);
 }

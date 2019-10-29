@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-void	ft_stack_push(t_stack *stack, t_elem *tmp)
+void	ft_stack_push(t_stack *stack, t_sq_elem *tmp)
 {
 	if (!tmp)
 		return ;
