@@ -6,13 +6,15 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/20 23:48:58 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/29 19:11:59 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ctnr.h"
 #include "avl.h"
 #include "libft.h"
+#include "types.h"
+#include "lem_in.h"
 
 #include <stdio.h>
 /*
@@ -32,42 +34,18 @@ char	*g_str_err[LEN] =
 };
 */
 
-typedef struct	s_path	t_path;
-typedef struct	s_ants	t_ants;
-typedef struct	s_ant	t_ant;
-
-struct					s_path
-{
-	t_ctnr				*path;
-	char				len;	// sdelat; int
-	char				ants;	// sdelat' int
-};
-
-struct					s_ants
-{
-	t_ant				*start;
-	t_ant				*end;
-};
-
-struct					s_ant
-{
-	t_elem				*room;
-	t_ant				*next;
-	int					ind;
-};
-
-void		ft_fucking_exit(void)
+void		ft_exit(void)
 {
 	exit(1);
 }
 
-t_node		*new_node(T_AVL_KEY key, t_content c)
+t_avl_str		*new_avl_str(char *key, t_content c)
 {
-	t_node	*tmp;
+	t_avl_str	*tmp;
 
-	if (!(tmp = malloc(sizeof(t_node))))
-		ft_fucking_exit();
-	tmp->name = key;
+	if (!(tmp = malloc(sizeof(t_avl_str))))
+		ft_exit();
+	tmp->key = key;
 	tmp->left = NULL;
 	tmp->right = NULL;
 	tmp->c = c;
@@ -83,22 +61,19 @@ t_content	new_room(void)
 	return (c);
 }
 
-t_state		*new_state(t_node *a, t_node *b)
+t_state		*new_state(void)
 {
 	t_state		*state;
 
 	if (!(state = malloc(sizeof(t_state))))
-		ft_fucking_exit();
+		ft_exit();
 	state->weight = 1;
 	state->is_active = 1;
 	state->cross = 0;
-	state->is_deleted = 0;
-	state->rooms[0] = a;
-	state->rooms[1] = b;
 	return (state);
 }
 
-t_content	new_edge(t_node *room, t_state *state)
+t_content	new_edge(t_avl_str *room, t_state *state)
 {
 	t_content	c;
 
@@ -108,29 +83,29 @@ t_content	new_edge(t_node *room, t_state *state)
 	return (c);
 }
 
-void		print_edge(t_node *node)
+void		print_edge(t_avl_str *node)
 {
-	printf("\t%s\n", node->name);
+	printf("\t%s\n", node->key);
 }
 
-void		print_room(t_node *node)
+void		print_room(t_avl_str *node)
 {
-	printf("%s to:\n", node->name);
-	avl_infix(node->c.room.edges, &print_edge);
+	printf("%s to:\n", node->key);
+	avl_str_infix(node->c.room.edges, &print_edge);
 	printf("\n");
 }
 
-void		print_node(t_node *node)
+void		print_avl_str(t_avl_str *node)
 {
-	printf("%s\n", node->name);
+	printf("%s\n", node->key);
 }
 
-void		del_node(t_node *node)
+void		del_avl_str(t_avl_str *node)
 {
 	free(node);
 }
 
-t_elem	*new_elem(t_node *node)
+t_elem	*new_elem(t_avl_str *node)
 {
 	t_elem	*tmp;
 
@@ -148,7 +123,7 @@ void		del_elem(t_elem *elem)
 	free(elem);
 }
 
-void		reset_suffix(t_node *root, t_queue *queue)
+void		reset_suffix(t_avl_str *root, t_queue *queue)
 {
 	if (!root)
 		return ;
@@ -157,38 +132,35 @@ void		reset_suffix(t_node *root, t_queue *queue)
 	if (root->c.edge.state->is_active)
 		return ;
 	root->c.edge.state->is_active = 1;
-	ft_queue_push(queue, ft_new_sq_elem(root->c.edge.room, sizeof(t_node), 0));
+	ft_queue_push(queue, ft_new_sq_elem(root->c.edge.room, sizeof(t_avl_str), 0));
 }
 
-void		reset(t_node *start)
+void		reset(t_avl_str *start)
 {
 	t_queue		*queue;
 	t_sq_elem	*tmp;
 
-//printf("before:\n");
 	queue = ft_queue_new();
-	ft_queue_push(queue, ft_new_sq_elem(start, sizeof(t_node), 0));
+	ft_queue_push(queue, ft_new_sq_elem(start, sizeof(t_avl_str), 0));
 	while (queue->len)
 	{
 		tmp = ft_queue_pop(queue);
-		start = (t_node *)tmp->content;
+		start = (t_avl_str *)tmp->content;
 		ctnr_clear(start->c.room.froms, &del_elem);
 		reset_suffix(start->c.room.edges, queue);
 		free(tmp);
 	}
-//printf("after:\n");
 }
 
-void		all_not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from, t_node *start, int *len)
+void		all_not_dijkstra_suffix(t_avl_str *root, t_queue *queue, t_avl_str *from, t_avl_str *start, int *len)
 {
-	t_node	*room;
+	t_avl_str	*room;
 
 	if (!root)
 		return ;
 	all_not_dijkstra_suffix(root->left, queue, from, start, len);
 	all_not_dijkstra_suffix(root->right, queue, from, start, len);
-	if (!root->c.edge.existance || !root->c.edge.state->is_active || \
-			root->c.edge.state->cross == 2 || root->c.edge.state->is_deleted)
+	if (!root->c.edge.existance || !root->c.edge.state->is_active || root->c.edge.state->cross == 2)
 		return ;
 	root->c.edge.state->is_active = 0;
 	room = root->c.edge.room;
@@ -202,38 +174,37 @@ void		all_not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from, t_node
 	}
 	else if (!room->c.room.froms->top)
 		ctnr_push_bot(room->c.room.froms, new_elem(from));
-	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_node), 0));
+	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_avl_str), 0));
 }
 
-void	all_not_dijkstra(t_node *start, t_node *end, int len)
+void	all_not_dijkstra(t_avl_str *start, t_avl_str *end, int len)
 {
 	t_queue		*queue;
 	t_sq_elem	*tmp;
 
 //	printf("distance from start:\n");
 	queue = ft_queue_new();
-	ft_queue_push(queue, ft_new_sq_elem(end, sizeof(t_node), 0));
+	ft_queue_push(queue, ft_new_sq_elem(end, sizeof(t_avl_str), 0));
 	while (queue->len)
 	{
 		tmp = ft_queue_pop(queue);
-		end = (t_node *)tmp->content;
+		end = (t_avl_str *)tmp->content;
 		all_not_dijkstra_suffix(end->c.room.edges, queue, end, start, &len);
-//		printf("\t%s: %d\n", end->name, end->c.room.distance);
+//		printf("\t%s: %d\n", end->key, end->c.room.distance);
 		free(tmp);
 	}
 }
 
-void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
+void		not_dijkstra_suffix(t_avl_str *root, t_queue *queue, t_avl_str *from)
 {
-	t_node	*room;
+	t_avl_str	*room;
 	int		buf;
 
 	if (!root)
 		return ;
 	not_dijkstra_suffix(root->left, queue, from);
 	not_dijkstra_suffix(root->right, queue, from);
-	if (!root->c.edge.existance || !root->c.edge.state->is_active || \
-			root->c.edge.state->cross == 2 || root->c.edge.state->is_deleted)
+	if (!root->c.edge.existance || !root->c.edge.state->is_active || root->c.edge.state->cross == 2)
 		return ;
 	root->c.edge.state->is_active = 0;
 	room = root->c.edge.room;
@@ -247,10 +218,10 @@ void		not_dijkstra_suffix(t_node *root, t_queue *queue, t_node *from)
 	}
 	room->c.room.distance = buf;
 	ctnr_push_bot(room->c.room.froms, new_elem(from));
-	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_node), 0));
+	ft_queue_push(queue, ft_new_sq_elem(room, sizeof(t_avl_str), 0));
 }
 
-void	not_dijkstra(t_node *start)
+void	not_dijkstra(t_avl_str *start)
 {
 	t_queue		*queue;
 	t_sq_elem	*tmp;
@@ -258,13 +229,13 @@ void	not_dijkstra(t_node *start)
 //	printf("distance from start:\n");
 	start->c.room.distance = 0;
 	queue = ft_queue_new();
-	ft_queue_push(queue, ft_new_sq_elem(start, sizeof(t_node), 0));
+	ft_queue_push(queue, ft_new_sq_elem(start, sizeof(t_avl_str), 0));
 	while (queue->len)
 	{
 		tmp = ft_queue_pop(queue);
-		start = (t_node *)tmp->content;
+		start = (t_avl_str *)tmp->content;
 		not_dijkstra_suffix(start->c.room.edges, queue, start);
-		printf("\t%s: %d\n", start->name, start->c.room.distance);
+//		printf("\t%s: %d\n", start->key, start->c.room.distance);
 		free(tmp);
 	}
 }
@@ -279,14 +250,14 @@ void		print_path(t_path path)
 		printf("\t%d to %d: ", path.ants, path.len);
 		while (tmp->next)
 		{
-			printf("%s -> ", tmp->node->name);
+			printf("%s -> ", tmp->node->key);
 			tmp = tmp->next;
 		}
-		printf("%s\n", tmp->node->name);
+		printf("%s\n", tmp->node->key);
 	}
 }
 
-void		print_paths(t_node *start, t_path *paths, int len)
+void		print_paths(t_avl_str *start, t_path *paths, int len)
 {
 	(void)start;
 	while (len)
@@ -297,178 +268,109 @@ void		print_paths(t_node *start, t_path *paths, int len)
 	}
 }
 
-void		edge_reverse(t_node *node, t_node *prev)
+void		edge_reverse(t_avl_str *node, t_avl_str *prev)
 {
-	t_node	*edge;
+	t_avl_str	*edge;
 
-	edge = avl_find(node->c.room.edges, prev->name, &ft_strcmp);
+	edge = avl_str_find(node->c.room.edges, prev->key, &ft_strcmp);
 	edge->c.edge.state->weight *= -1;
 	++edge->c.edge.state->cross;
 	edge->c.edge.existance = 0;
-	edge = avl_find(prev->c.room.edges, node->name, &ft_strcmp);
+	edge = avl_str_find(prev->c.room.edges, node->key, &ft_strcmp);
 	edge->c.edge.existance = 1;
 }
 
-t_state		*disconnect(t_node *a, t_node *b)
+void		path_invert_rec(t_avl_str *node, t_avl_str *prev)
 {
-	t_state		*state;
-	t_node		*tmp;
+	t_elem	*next;
+//	t_avl_str	*out;
 
-	tmp = avl_find(a->c.room.edges, b->name, &ft_strcmp);
-	state = tmp->c.edge.state;
-	a->c.room.edges = avl_remove(a->c.room.edges, b->name, &ft_strcmp);
-	b->c.room.edges = avl_remove(b->c.room.edges, a->name, &ft_strcmp);
-	return (state);
-}
-
-void		connect(t_node *a, t_node *b, t_state *state)
-{
-	t_content	edge;
-
-	edge = new_edge(b, state);
-//	edge.existance = existance;
-	a->c.room.edges = avl_insert(a->c.room.edges, \
-			new_node(b->name, edge), &ft_strcmp);
-}
-
-t_state		*node_division(t_node *next, t_node *node, t_node *prev, t_state *state_prev)
-{/*
-	t_node		*out;
-	t_state		*state_next;
-	t_state		*state;
-
-	state_next = disconnect(node, next);
-	out = new_node(node->name, new_room());
-	out->c.room.edges = node->c.room.edges;
-	node->c.room.edges = NULL;
-	connect(prev, out, state_prev);
-	state = new_state();
-	state->weight = 0;
-	connect(out, node, state);
-	return (state_next);*/
-/*	tmp = avl_find(node->c.room.edges, prev->name, &ft_strcmp);
-	tmp->c.edge.state->is_deleted = 1;
-
-
-	state = tmp->c.edge.state;
-	tmp = new_node(out->name, new_edge(out, state));
-	prev->c.room.edges = avl_insert(prev->c.room.edges, tmp, &ft_strcmp);
-	edge = new_edge(prev, state);
-	edge.edge.existance = 0;
-	tmp = new_node(prev->name, edge);
-	out->c.room.edges = avl_insert(out->c.room.edges, tmp, &ft_strcmp);
-
-	state = new_state();
-	state->weight = 0;
-	tmp = new_node(node->name, new_edge(node, state));
-	out->c.room.edges = avl_insert(out->c.room.edges, tmp, &ft_strcmp);
-	edge = new_edge(out, state);
-	edge.edge.existance = 0;
-	tmp = new_node(out->name, edge);
-	node->c.room.edges = avl_insert(node->c.room.edges, tmp, &ft_strcmp);*/
-}
-
-void		all_path_invert(t_node *end)
-{
-	t_elem		*next;
-
-	next = end->c.room.froms->top;
-	if (!next)
-		return ;
-	edge_reverse(next->node, end);
-	all_path_invert(next->node);
-}
-
-void		path_invert_rec(t_node *node, t_node *prev, t_state *state)
-{
-	t_elem		*next;
-
+	(void)prev;
+/*	printf("%s\n", node->key);
+	printf("\t%p\n", node);
+	printf("\t%p\n", node->c.room.froms);
+	printf("\t%p\n", node->c.room.froms->top);
+	printf("\t%p\n", node->c.room.froms->top->node);*/
 	next = node->c.room.froms->top;
 	if (!next)
-	{
-		connect(prev, node, state);
 		return ;
-	}
-	edge_reverse(next->node, node);
-	state = node_division(next->node, node, prev, state);
-	path_invert_rec(next->node, node, state);
+//	out = new_avl_str(av[i], new_room());
+//	out->c.room.edges = node->c.room.edges;
 //	node->c.room.edges = NULL;
+	edge_reverse(next->node, node);
+	path_invert_rec(next->node, node);
 }
 
-void		path_invert(t_node *end)
+void		path_invert(t_avl_str *end)
 {
-	t_node		*tmp;
-	t_state		*state;
+	t_avl_str	*tmp;
 
 	tmp = end->c.room.froms->top->node;
 	if (!tmp)
 		return ;
 	edge_reverse(tmp, end);
-	printf("before:\n");
-	printf("after:\n");
-	state = disconnect(end, tmp);
-	path_invert_rec(tmp, end, state);
+	path_invert_rec(tmp, end);
 }
 /*
-void		path_invert_rec(t_node *node, t_node *from) seychas eto recursiya no luchshe sdelat' ochered' \
+void		path_invert_rec(t_avl_str *node, t_avl_str *from) seychas eto recursiya no luchshe sdelat' ochered' \
 															to est' obhod v shirinu vmesto obhoda v glubinu 
 {
 	t_elem	*tmp;
-	t_node	*buf;
-	t_node	*out;
+	t_avl_str	*buf;
+	t_avl_str	*out;
 
 	if (!node)
 		return ;
-	node->c.room.edges = avl_remove(node->c.room.edges, from->name, &ft_strcmp);
+	node->c.room.edges = avl_str_remove(node->c.room.edges, from->key, &ft_strcmp);
 	tmp = node->c.room.froms->top;
 //	printf("\t%p\n", tmp);
 	while (tmp)
 	{
 		path_invert_rec(tmp->node, node);
-		buf = avl_find(node->c.room.edges, tmp->node->name, &ft_strcmp);
+		buf = avl_str_find(node->c.room.edges, tmp->node->key, &ft_strcmp);
 		buf->c.edge.weight *= -1;
 		tmp = tmp->next;
 	}
 	if (node->c.room.froms->top)
 	{
-		out = new_node(ft_strjoin(node->name, "-out"), new_room());
+		out = new_avl_str(ft_strjoin(node->key, "-out"), new_room());
 		ft_swap(&node->c.room.edges, &out->c.room.edges, sizeof(node->c.room.edges));
-		buf = new_node(node->name, new_edge(node));
+		buf = new_avl_str(node->key, new_edge(node));
 		buf->c.edge.weight = 0;
-		out->c.room.edges = avl_insert(out->c.room.edges, buf, &ft_strcmp);
+		out->c.room.edges = avl_str_insert(out->c.room.edges, buf, &ft_strcmp);
 		print_room(out);
-		from->c.room.edges = avl_remove(from->c.room.edges, node->name, &ft_strcmp)
-		buf = new_node(out->name, new_edge(out));
+		from->c.room.edges = avl_str_remove(from->c.room.edges, node->key, &ft_strcmp)
+		buf = new_avl_str(out->key, new_edge(out));
 		buf->c.edge.weight *= -1;
-		from->c.room.edges = avl_insert(from->c.room.edges, buf, &ft_strcmp);
+		from->c.room.edges = avl_str_insert(from->c.room.edges, buf, &ft_strcmp);
 		// dodelat', peredelat
 seychas posle razbiyeniya in ukazyvaet na out, a dolzhno byt' naoborot.
 	}
 }*/
 /*
-void		path_invert(t_node *end)
+void		path_invert(t_avl_str *end)
 {
 	t_elem	*tmp;
-	t_node	*buf;
+	t_avl_str	*buf;
 
 	tmp = end->c.room.froms->top;
 	while (tmp)
 	{
 		path_invert_rec(tmp->node, end);
-//		buf = avl_find(end->c.room.edges, tmp->node->name, &ft_strcmp);
-		buf = new_node(tmp->node->name, new_edge(tmp->node));
-		end->c.room.edges = avl_insert(end->c.room.edges, buf, &ft_strcmp);
+//		buf = avl_str_find(end->c.room.edges, tmp->node->key, &ft_strcmp);
+		buf = new_avl_str(tmp->node->key, new_edge(tmp->node));
+		end->c.room.edges = avl_str_insert(end->c.room.edges, buf, &ft_strcmp);
 		buf->c.edge.weight *= -1;
 		tmp = tmp->next;
 	}
 }*/
 /*
-t_node		*fill_start(void)
+t_avl_str		*fill_start(void)
 {
 	
 }
 
-t_node		*fill_end(void)
+t_avl_str		*fill_end(void)
 {
 }
 
@@ -491,14 +393,14 @@ char		smart_split(char *str, char ***arr)
 	return (res);
 }
 
-t_node		*init(int *ants)
+t_avl_str		*init(int *ants)
 {
 	char	*str;
 	int		n;
 	char	**arr;
 
 	if ((n = gnl(0, &str) < 0))
-		ft_fucking_exit();
+		ft_exit();
 	ants = atoi(str);
 	free(str);
 	flag = 0;
@@ -520,40 +422,36 @@ t_node		*init(int *ants)
 		free(str);
 	}
 	if (n < 0)
-		ft_fucking_exit();
+		ft_exit();
 }
 
 int			main(void)
 {
-	t_node	*root;
+	t_avl_str	*root;
 	int		ants;
 
 	root = init(&ants);
 }
 */
 
-void		find_paths(t_node *start, t_node *end, t_path **sols, int len)
+void		find_paths(t_avl_str *start, t_avl_str *end, t_path **sols, int len)
 {
 	t_path	*tmp;
 	t_elem	*buf;
-	t_node	*node;
+	t_avl_str	*node;
 
 	if (!(*sols = malloc((len) * sizeof(t_path))))
-		ft_fucking_exit();
+		ft_exit();
 	tmp = *sols;
 	reset(start);
 	all_not_dijkstra(start, end, len);
-//	all_path_invert(start);
-//	reset(start);
 	while (len)
 	{
 		tmp->path = ctnr_new();
 		tmp->len = 1;
 		ctnr_push_bot(tmp->path, new_elem(start));
 		buf = ctnr_pop_top(start->c.room.froms);
-//		printf("before: %p\n", buf);
 		node = buf->node;
-//		printf("after:\n");
 		while (node->c.room.froms->top)
 		{
 			ctnr_push_bot(tmp->path, new_elem(node));
@@ -573,7 +471,7 @@ void		add_ant(t_ants *ingame, t_elem *start)
 	static int	i = 1;
 
 	if (!(ant = malloc(sizeof(t_ant))))
-		ft_fucking_exit();
+		ft_exit();
 	ant->next = NULL;
 	ant->room = start;
 	ant->ind = i;
@@ -596,7 +494,7 @@ void		move_ants(t_ants *ingame)
 	{
 //		printf("before:\n");
 		tmp->room = tmp->room->next;
-		printf("L%d-%s ", tmp->ind, tmp->room->node->name);
+		printf("L%d-%s ", tmp->ind, tmp->room->node->key);
 		if (!tmp->room->next)
 		{
 			if (prev)
@@ -622,19 +520,17 @@ void		move_ants(t_ants *ingame)
 	printf("\n");
 }
 
-t_node		*is_valid_map(t_node **start, t_node **end, int *ants, int *max_paths);
-
 int			main(int ac, char *av[])
 {
-	t_node	*root;
+	t_avl_str	*root;
 	int		i;
 	int		j;
 	char	**arr;
-	t_node	*tmp;
-	t_node	*tmp1;
-	t_node	*tmp2;
-	t_node	*start;
-	t_node	*end;
+	t_avl_str	*tmp;
+	t_avl_str	*tmp1;
+	t_avl_str	*tmp2;
+	t_avl_str	*start;
+	t_avl_str	*end;
 	int		n;
 	int		ants;
 	int		max_paths;
@@ -662,12 +558,12 @@ int			main(int ac, char *av[])
 			++i;
 			continue ;
 		}
-		tmp = new_node(av[i], new_room());
+		tmp = new_avl_str(av[i], new_room());
 		if (ft_strequ(av[i - 1], "##start"))
 			start = tmp;
 		if (ft_strequ(av[i - 1], "##end"))
 			end = tmp;
-		root = avl_insert(root, tmp, &ft_strcmp);
+		root = avl_str_insert(root, tmp, &ft_strcmp);
 		++i;
 	}
 	++i;
@@ -681,32 +577,27 @@ int			main(int ac, char *av[])
 			++i;
 			continue ;// ????
 		}
-		tmp1 = avl_find(root, arr[0], &ft_strcmp);
-		tmp2 = avl_find(root, arr[1], &ft_strcmp);
+		tmp1 = avl_str_find(root, arr[0], &ft_strcmp);
+		tmp2 = avl_str_find(root, arr[1], &ft_strcmp);
 		free(arr);
 		if (tmp1 == start || tmp2 == start)
 			++s_n;
 		if (tmp1 == end || tmp2 == end)
 			++e_n;
-		t_content edge;
-		state = new_state(tmp1, tmp2);
-		edge = new_edge(tmp1, state);
-		edge.edge.n = 1;
-		tmp = new_node(tmp1->name, edge);
-		tmp2->c.room.edges = avl_insert(tmp2->c.room.edges, tmp, &ft_strcmp);
-		edge = new_edge(tmp2, state);
-		edge.edge.n = 0;
-		tmp = new_node(tmp2->name, edge);
-		tmp1->c.room.edges = avl_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
+		state = new_state();
+		tmp = new_avl_str(tmp1->key, new_edge(tmp1, state));
+		tmp2->c.room.edges = avl_str_insert(tmp2->c.room.edges, tmp, &ft_strcmp);
+		tmp = new_avl_str(tmp2->key, new_edge(tmp2, state));
+		tmp1->c.room.edges = avl_str_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
 		++i;
 	}
 	max_paths = (s_n < e_n) ? (s_n) : (e_n);
 	if (!(sols = malloc(max_paths * sizeof(t_path *))))
-		ft_fucking_exit();
+		ft_exit();
 	printf("ants  = %d\n", ants);
-	printf("start = %s\n", start ? start->name : NULL);
-	printf("end   = %s\n", end ? end->name : NULL);
-//	avl_infix(root, &print_room);
+	printf("start = %s\n", start ? start->key : NULL);
+	printf("end   = %s\n", end ? end->key : NULL);
+//	avl_str_infix(root, &print_room);
 	min = -1;
 	i = 1;
 	while (i <= max_paths)
@@ -719,18 +610,18 @@ int			main(int ac, char *av[])
 		find_paths(start, end, sols, i);
 		paths = *sols + 1;
 		n = ants;
-		paths[-1].ants = 0;
+		(paths - 1)->ants = 0;
 		j = 1;
 		while (j < i)
 		{
-			paths[-1].ants = paths->len - paths[-1].len;
-			n -= paths[-1].ants * j;
+			(paths - 1)->ants = paths->len - (paths - 1)->len;
+			n -= (paths - 1)->ants * j;
 			div = n / j;
 			mod = n % j;
 			if (n <= 0 || div == 0 || (div == 1 && mod == 0))
 			{
-				n += paths[-1].ants * j;
-				paths[-1].ants = 0; // vynesti za cycle
+				n += (paths - 1)->ants * j;
+				(paths - 1)->ants = 0;
 				break ;
 			}
 			++paths;
@@ -738,8 +629,8 @@ int			main(int ac, char *av[])
 		}
 		if (j == i)
 		{
-			n += paths[-1].ants * j;
-			paths[-1].ants = 0;
+			n += (paths - 1)->ants * j;
+			(paths - 1)->ants = 0;
 		}
 		div = n / j;
 		mod = n % j;
@@ -799,12 +690,12 @@ int			main(int ac, char *av[])
 	return (0);
 }
 /*
-void	ft_add_node(t_node *nodes, int *len, char *str)
+void	ft_add_avl_str(t_avl_str *nodes, int *len, char *str)
 {
 	int		name_len;
 
-	nodes = ft_realloc(nodes, *len * sizeof(t_node), sizeof(t_node));
-	nodes[len] = ft_memalloc(sizeof(t_node));
+	nodes = ft_realloc(nodes, *len * sizeof(t_avl_str), sizeof(t_avl_str));
+	nodes[len] = ft_memalloc(sizeof(t_avl_str));
 	name_len = str - ft_strchr(str, ' ');
 	nodes[len].name = malloc((name_len + 1) * sizeof(char));
 	nodes[len].name[name_len] = 0;
@@ -816,7 +707,7 @@ int		main(int ac, char **av)
 {
 	int		start;
 	int		end;
-	t_node	*nodes;
+	t_avl_str	*nodes;
 	int		len;
 	int		ants;
 	char	*str;
@@ -833,16 +724,16 @@ int		main(int ac, char **av)
 			free(str);
 			gnl(0, &str, GNL_BUFF);
 			start = len;
-			ft_add_node(nodes, &len, str);
+			ft_add_avl_str(nodes, &len, str);
 		}
 		if (ft_strequ(str, "##end"))
 		{
 			free(str);
 			gnl(0, &str, GNL_BUFF);
 			start = end;
-			ft_add_node(nodes, &len, str);
+			ft_add_avl_str(nodes, &len, str);
 		}
-		ft_add_node(nodes, &len, str);
+		ft_add_avl_str(nodes, &len, str);
 		free(str);
 	}
 	return (0);

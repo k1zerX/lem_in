@@ -6,38 +6,22 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/15 20:40:40 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/20 23:48:58 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/29 19:07:02 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef AVL_H
 # define AVL_H
 
-typedef struct	s_node		t_node;
-typedef struct	s_edge		t_edge;
-typedef struct	s_state		t_state;
-typedef struct	s_room		t_room;
-typedef union	u_content	t_content;
-typedef enum	e_type		t_type;
-
 # include "ctnr.h"
+# include "types.h"
 # include <stdlib.h>
 
-# define T_AVL_KEY char *
-
-# define AVL_KEY name
-
 # define HEIGHT(x) ((x) ? (x->height) : (0))
-/*
-enum						e_type
-{
-	ROOM,
-	EDGE
-};
-*/	
+
 struct						s_edge
 {
-	t_node					*room;
+	t_avl_str				*room;
 	t_state					*state;
 	unsigned char			existance	: 1;
 	unsigned char			n			: 1;
@@ -45,7 +29,7 @@ struct						s_edge
 
 struct						s_room
 {
-	t_node					*edges;
+	t_avl_str				*edges;
 	t_ctnr					*froms;
 	int						distance;
 };
@@ -56,12 +40,12 @@ union						u_content
 	t_room					room;
 };
 
-struct						s_node
+struct						s_avl_str
 {
-	T_AVL_KEY				AVL_KEY;
+	char					*key;
 	t_content				c;
-	t_node					*left;
-	t_node					*right;
+	t_avl_str				*left;
+	t_avl_str				*right;
 	unsigned char			height;
 };
 
@@ -70,18 +54,27 @@ struct						s_state
 	char					weight;
 	unsigned char			is_active	: 1;
 	unsigned char			cross		: 2;
-	unsigned char			is_deleted	: 1;
-	t_node					*rooms[2];
+	t_edge					*ends[2];
 };
 
-t_node						*avl_balance(t_node *node);
-t_node						*avl_insert(t_node *root, t_node *node, \
-									int (*cmp)(T_AVL_KEY a, T_AVL_KEY b));
-t_node						*avl_find(t_node *root, T_AVL_KEY key, \
-									int (*cmp)(T_AVL_KEY a, T_AVL_KEY b));
-void						avl_bfs(t_node *root, void (*f)(t_node *node));
-void						avl_infix(t_node *root, void (*f)(t_node *node));
-t_node						*avl_remove(t_node *root, T_AVL_KEY key, \
-									int (*cmp)(T_AVL_KEY a, T_AVL_KEY b));
+t_avl_str					*avl_str_balance(t_avl_str *node);
+t_avl_str					*avl_str_insert(t_avl_str *root, t_avl_str *node, \
+									int (*cmp)(char *a, char *b));
+t_avl_str					*avl_str_find(t_avl_str *root, char *key, \
+									int (*cmp)(char *a, char *b));
+void						avl_str_bfs(t_avl_str *root, void (*f)(t_avl_str *node));
+void						avl_str_infix(t_avl_str *root, void (*f)(t_avl_str *node));
+t_avl_str					*avl_str_remove(t_avl_str *root, char *key, \
+									int (*cmp)(char *a, char *b));
+
+t_avl_str					*avl_int_balance(t_avl_str *node);
+t_avl_str					*avl_int_insert(t_avl_str *root, t_avl_str *node, \
+									int (*cmp)(int a, int b));
+t_avl_str					*avl_int_find(t_avl_str *root, int key, \
+									int (*cmp)(int a, int b));
+void						avl_int_bfs(t_avl_str *root, void (*f)(t_avl_str *node));
+void						avl_int_infix(t_avl_str *root, void (*f)(t_avl_str *node));
+t_avl_str					*avl_int_remove(t_avl_str *root, int key, \
+									int (*cmp)(int a, int b));
 
 #endif

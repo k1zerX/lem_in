@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 17:30:20 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/25 20:23:02 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/29 18:16:34 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "gnl.h"
 
 #include <stdio.h>
-
+/*
 void		ft_exit(char *str)
 {
 	ft_putendl(str);
@@ -242,4 +242,4 @@ int			main()
 	max_paths = 0;
 	root = is_valid_map(&start, &end, &ants, &max_paths);
 	
-}
+}*/

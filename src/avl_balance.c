@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   avl_balance.c                                      :+:      :+:    :+:   */
+/*   avl_str_balance.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/11 23:24:00 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/25 20:49:39 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/29 18:52:31 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "avl.h"
 
-static char		bfactor(t_node *node)
+static char		bfactor(t_avl_str *node)
 {
 	return (HEIGHT(node->right) - HEIGHT(node->left));
 }
 
-static void		fixheight(t_node *node)
+static void		fixheight(t_avl_str *node)
 {
 	unsigned char	hl;
 	unsigned char	hr;
@@ -27,9 +27,9 @@ static void		fixheight(t_node *node)
 	node->height = (hl > hr) ? (hl) : (hr) + 1;
 }
 
-static t_node	*rotl(t_node *node)
+static t_avl_str	*rotl(t_avl_str *node)
 {
-	t_node	*tmp;
+	t_avl_str	*tmp;
 
 	tmp = node->right;
 	node->right = tmp->left;
@@ -39,9 +39,9 @@ static t_node	*rotl(t_node *node)
 	return (tmp);
 }
 
-static t_node	*rotr(t_node *node)
+static t_avl_str	*rotr(t_avl_str *node)
 {
-	t_node	*tmp;
+	t_avl_str	*tmp;
 
 	tmp = node->left;
 	node->left = tmp->right;
@@ -51,7 +51,7 @@ static t_node	*rotr(t_node *node)
 	return (tmp);
 }
 
-t_node			*avl_balance(t_node *node)
+t_avl_str			*avl_str_balance(t_avl_str *node)
 {
 	char	b;
 

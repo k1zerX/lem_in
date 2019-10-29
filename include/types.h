@@ -1,18 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putchar_fd.c                                    :+:      :+:    :+:   */
+/*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/22 18:03:45 by kbatz             #+#    #+#             */
-/*   Updated: 2018/11/22 18:16:00 by kbatz            ###   ########.fr       */
+/*   Created: 2019/10/29 18:54:24 by kbatz             #+#    #+#             */
+/*   Updated: 2019/10/29 19:00:00 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef TYPES_H
+# define TYPES_H
 
-void	ft_putchar_fd(char c, int fd)
-{
-	write(fd, &c, 1);
-}
+typedef struct s_ctnr	t_ctnr;
+typedef struct s_elem	t_elem;
+
+typedef struct s_avl_str	t_avl_str;
+typedef struct s_edge		t_edge;
+typedef struct s_state		t_state;
+typedef struct s_room		t_room;
+typedef union u_content		t_content;
+typedef enum e_type			t_type;
+
+typedef struct	s_path	t_path;
+typedef struct	s_ants	t_ants;
+typedef struct	s_ant	t_ant;
+
+#endif

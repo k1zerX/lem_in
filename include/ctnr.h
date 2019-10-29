@@ -6,17 +6,15 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/15 21:17:15 by kbatz             #+#    #+#             */
-/*   Updated: 2019/09/16 00:27:13 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/29 18:57:37 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CTNR_H
 # define CTNR_H
 
-typedef struct s_ctnr	t_ctnr;
-typedef struct s_elem	t_elem;
-
 # include "avl.h"
+# include "types.h"
 # include <stdlib.h>
 
 # ifndef NULL
@@ -32,7 +30,7 @@ struct					s_ctnr
 
 struct					s_elem
 {
-	t_node				*node;
+	t_avl_str			*node;
 	t_elem				*next;
 	t_elem				*prev;
 };

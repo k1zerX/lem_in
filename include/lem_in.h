@@ -1,22 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memdel.c                                        :+:      :+:    :+:   */
+/*   lem_in.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/20 22:23:28 by kbatz             #+#    #+#             */
-/*   Updated: 2018/12/02 05:36:41 by kbatz            ###   ########.fr       */
+/*   Created: 2019/10/29 18:59:18 by kbatz             #+#    #+#             */
+/*   Updated: 2019/10/29 19:00:14 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef LEM_IN_H
+# define LEM_IN_H
 
-void	ft_memdel(void **ap)
+#include "types.h"
+
+struct					s_path
 {
-	if (ap)
-	{
-		free(*ap);
-		*ap = NULL;
-	}
-}
+	t_ctnr				*path;
+	char				len;	// sdelat; int
+	char				ants;	// sdelat' int
+};
+
+struct					s_ants
+{
+	t_ant				*start;
+	t_ant				*end;
+};
+
+struct					s_ant
+{
+	t_elem				*room;
+	t_ant				*next;
+	int					ind;
+};
+
+#endif
