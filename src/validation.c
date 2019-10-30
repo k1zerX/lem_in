@@ -5,16 +5,17 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/03 17:30:20 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/29 19:43:36 by etuffleb         ###   ########.fr       */
+/*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
+/*   Updated: 2019/10/30 19:44:21 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ctnr.h"
-#include "avl.h"
-#include "libft.h"
+#include "read.h"
 
-#include <stdio.h>
+t_avl_str		*new_avl_str(char *key, t_content c);
+t_content		new_edge(t_avl_str *room, t_state *state);
+t_content		new_room(void);
+t_state			*new_state(void);
 
 void		ft_exit(char *str)
 {
@@ -22,24 +23,44 @@ void		ft_exit(char *str)
 	exit(1);
 }
 
-t_node		*new_node(T_AVL_KEY key, t_content c);
-t_state		*new_state(void);
-t_content	new_edge(t_node *room, t_state *state);
-t_content	new_room(void);
-
-typedef struct	s_terminates
+void	add_to_list(t_str_list *list, char *s)
 {
-	t_node		*root;
-	t_node		*start;
-	t_node		*end;
-	int			max_paths;
-	int			ants;
-}				t_terminates;
+	t_str_list_elem *new;
 
-char		*find_name(char *str)
+	if (!(new = (t_str_list_elem *)malloc(sizeof(t_str_list_elem))))
+		ft_exit("malloc");
+
+	new->s = s;
+	new->next = NULL;
+	if (!list->start && !list->end)
+		list->start = new;
+	else if (!list->end)
+	{
+		list->end = new;
+		list->start->next = list->end;
+	}
+	else
+	{
+		list->end->next = new;
+		list->end = list->end->next;
+	}
+}
+
+char *ft_str_dupl(int size, char*str)
+{
+	char *res;
+
+	if (!(res = malloc(sizeof(char) * (size + 1))))
+		ft_exit("malloc");
+	res = ft_strncpy(res, str, size);
+	res[size] = '\0';
+	return (res);
+}
+
+char *find_name(char *str)
 {
 	char *name;
-	int i;
+		int i;
 
 	if (*str == '#' && *(str + 1) != '#')//comment
 	{
@@ -58,61 +79,49 @@ char		*find_name(char *str)
 		}
 		if (i == 0 || str[0] == 'L')
 			ft_exit("error");
-		if (!(name = (char *)malloc(sizeof(char) * (i + 1))))
-			ft_exit("malloc");
-		name = ft_strncpy(name, str, i);
-		name[i] = '\0';
+		name = ft_str_dupl(i, str);
+
 	}
 	return (name);
 }
 
-void	print_nodes_test(t_terminates *term)
-{
-	printf("root: %s\n", term->root->name);
-	printf("root left: %s\n", term->root->left->name);
-	printf("root right: %s\n", term->root->right->name);
-	printf("start: %s\n", term->start->name);
-	printf("end: %s\n", term->end->name);
-	printf("ants = %d, max paths = %d\n", term->ants, term->max_paths);
-}
-
-char		**rooms_split(char *str, char c, char *s_n, char *e_n)
+char **rooms_split(char *str, char *s_n, char *e_n)
 {
 	char	**arr;
 	char	*new;
 	int		i;
 
 	i = 0;
-
 	if (!ft_strchr(str, '-'))
 		ft_exit("There's no edges in one of the rooms");
-	arr = ft_strsplit(str, c);
-	while (arr[1][i] != '\0')
-		i++;
-	if (arr[1][i - 1] == 13)
-	{
-		new = malloc(sizeof(char) * (i));
-		new = ft_strncpy(new, arr[1], i);
-		new[i - 1] = '\0';
-		free(arr[1]);
-		arr[1] = new;
-	}
+	arr = ft_strsplit(str, '-');//to check!!!!
+	// while (arr[1][i] != '\0')
+	// 	i++;
+	// if (!(new = malloc(sizeof(char) * (i))))
+	// 	ft_exit("malloc");
+	// new = ft_str_dupl(i, arr[1])
+	
+	// ft_strncpy(new, arr[1], i + 1);
+	// new[i] = '\0';
+	// free(arr[1]);
+	// arr[1] = new;
+
 	arr[2] = s_n;
 	arr[3] = e_n;
 	return (arr);
 }
 
-void		init_edges(t_terminates *term, char **arr)
+void	init_edges(t_read *term, char **arr)
 {
-	t_node	*tmp1;
-	t_node	*tmp;
-	t_node	*tmp2;
-	t_state	*state;
+	t_avl_str	*tmp1;
+	t_avl_str	*tmp;
+	t_avl_str	*tmp2;
+	t_state		*state;
 
 	if (ft_strequ(arr[0], arr[1]))
 		ft_exit("error same rooms");
-	tmp1 = avl_find(term->root, arr[0], &ft_strcmp);
-	tmp2 = avl_find(term->root, arr[1], &ft_strcmp);
+	tmp1 = avl_str_find(term->root, arr[0], &ft_strcmp);
+	tmp2 = avl_str_find(term->root, arr[1], &ft_strcmp);
 	if (!tmp1 || !tmp2)
 		ft_exit("Wrong room name!");
 	free(arr);
@@ -121,49 +130,47 @@ void		init_edges(t_terminates *term, char **arr)
 	if (tmp1 == term->end || tmp2 == term->end)
 		++(*(arr[3]));
 	state = new_state();
-	tmp = new_node(tmp1->name, new_edge(tmp1, state));
-	tmp2->c.room.edges = avl_insert(tmp2->c.room.edges, tmp, &ft_strcmp);
-	tmp = new_node(tmp2->name, new_edge(tmp2, state));
-	tmp1->c.room.edges = avl_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
+	tmp = new_avl_str(tmp1->key, new_edge(tmp1, state));
+	tmp2->c.room.edges = avl_str_insert(tmp2->c.room.edges, tmp, &ft_strcmp);
+	tmp = new_avl_str(tmp2->key, new_edge(tmp2, state));
+	tmp1->c.room.edges = avl_str_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
 }
 
-int			push_edges(t_terminates *term, char *str, int i, char ***arr)
+int		push_edges(t_read *term, char *str, t_str_list *str_list)
 {
 	char	s_n;
 	char	e_n;
 
 	s_n = 0;
 	e_n = 0;
-	init_edges(term, rooms_split(str, '-', &s_n, &e_n));
+	init_edges(term, rooms_split(str, &s_n, &e_n));
 	free(str);
-
 	while (gnl(0, &str) > 0)
 	{
+		str[ft_strlen(str) - 1] = '\0';
+		add_to_list(str_list, str);
+
 		if (!str || str[0] == '#')
 			continue ;
-		printf("str = %s\n", str);
-		(*arr)[i] = ft_strdup(str);
-		i++;
-		free(str);
+		init_edges(term, rooms_split(str, &s_n, &e_n));
 	}
 	return ((s_n < e_n) ? (s_n) : (e_n));
 }
 
-t_node		*init_node(t_terminates *term, char *str, int *is_start)
+t_avl_str		*init_node(t_read *term, char *str, int *is_start)
 {
-	int		i;
-	t_node	*node;
-	char	*name;
+	int			i;
+	t_avl_str	*node;
+	char		*name;
 
 	i = 0;
 	while (str[i] != ' ' && str[i] != '-')
 		i++;
 	if (str[i] == '-')
 		ft_exit("Error, no such room");
-	name = ft_memalloc(sizeof(char) * (i + 1));
-	name = ft_strncpy(name, str, i);// i + 1???
-	name[i] = '\0';
-	node = new_node(name, new_room());
+	name = ft_str_dupl(i, str);// i + 1???
+	node = new_avl_str(name, new_room());
+
 	while (str[i + 1] != ' ')
 		i++;
 	if (*is_start == 1 || *is_start == -1)
@@ -175,82 +182,87 @@ t_node		*init_node(t_terminates *term, char *str, int *is_start)
 	return (node);
 }
 
-t_node		*is_valid_map(t_terminates *term, char ***arr)
+void			is_valid(t_read *term, t_str_list *str_list)
 {
-	char	*name;
-	char	*str;
-	t_node	*tmp;
-	int		is_start;
-	int		buf;
-	int i = 1;
+	char		*str;
+	char		*name;
+	t_avl_str	*tmp;
+	int			is_start;
 
 	is_start = 0;
-	while ((buf = gnl(0, &str)) > 0)
+	while (gnl(0, &str) > 0)
 	{
+		str[ft_strlen(str) - 1] = '\0';
+		add_to_list(str_list, str);
 		if ((name = find_name(str)))
 		{
-			printf("str = %s\n", str);
-			(*arr)[i] = ft_strdup(str);
-			i++;
-			if (!ft_strncmp(name, "##start", 7) || !ft_strncmp(name, "##end", 5))
+			if (ft_strequ(name, "##start") || ft_strequ(name, "##end"))
 			{
-				is_start = (!ft_strncmp(name, "##start", 7)) ? 1 : is_start;
-				is_start = (!ft_strncmp(name, "##end", 5)) ? -1 : is_start;
+				is_start = (ft_strequ(name, "##start")) ? 1 : is_start;
+				is_start = (ft_strequ(name, "##end")) ? -1 : is_start;
 				continue ;
 			}
-			if (!(tmp = avl_find(term->root, name, &ft_strcmp)))
-				term->root = avl_insert(term->root, init_node(term, str, &is_start), &ft_strcmp);
+			if (!(tmp = avl_str_find(term->root, name, &ft_strcmp)))
+				term->root = avl_str_insert(term->root, init_node(term, str, &is_start), &ft_strcmp);
 			else
-			{
-				term->max_paths = push_edges(term, str, i, arr);
-			}
-			free(str);
+				term->max_paths = push_edges(term, str, str_list);
 		}
 	}
-	if (buf == -1)
-		ft_exit("buff == -1");
-	return (term->root);
 }
 
-void	print_map(char **arr)
+t_str_list		*is_valid_map(t_read *term)
 {
-	while(arr)
-	{
-		printf("%s", *arr);
-		arr++;
-	}
+	char			*str;
+	t_str_list		*str_list;
 
-}
-
-t_node		*get_map(t_terminates *term)
-{
-	char	*str;
-	char	**arr;
-
-	term->max_paths = 0;
+	if (!(str_list = (t_str_list *)malloc(sizeof(t_str_list))))
+		ft_exit("malloc");
+	term->root = NULL;
 	term->ants = 0;
+	str_list->start = NULL;
+	str_list->end = NULL;
 	if (gnl(0, &str) <= 0 || (term->ants = ft_atoi(str)) <= 0)
 		ft_exit("Error, ants");
-	arr = &str;
-	term->start = NULL;
-	term->end = NULL;
-	
-	term->root = is_valid_map(term, &arr);
+	str[ft_strlen(str) - 1] = '\0';
+	add_to_list(str_list, str);
+
+	is_valid(term, str_list);
+
 	if (!term->max_paths)
 		ft_exit("there is no edges");
-	// print_map(arr);
-	print_nodes_test(term);
-//	free_arr(&arr[1]);
-	return (term->root);
+	return (str_list);
 }
+
+void print_map(t_str_list_elem *start)
+{
+	while(start)
+	{
+		printf("%s\n", start->s);
+		start = start->next;
+	}
+}
+
+void	print_test_avl(t_read *terminates)
+{
+	printf("root = %s\n", terminates->root->key);
+	printf("root->right = %s\n", terminates->root->right->key);
+	printf("root->left = %s\n", terminates->root->left->key);
+	printf("start = %s\n", terminates->start->key);
+	printf("end = %s\n", terminates->end->key);
+	printf("max_path = %d\n", terminates->max_paths);
+	printf("ants = %d\n", terminates->ants);
+}
+
 
 int			main()
 {
-	t_terminates	*term;
-
-	if (!(term = (t_terminates *)malloc(sizeof(t_terminates))))
-		ft_exit("Error");
-	term->root = get_map(term);
-
+	t_read		*terminates;
+	t_str_list	*str_list;
 	
+	if (!(terminates = (t_read *)malloc(sizeof(t_read))))
+		ft_exit("malloc");
+	str_list = is_valid_map(terminates);
+	print_map(str_list->start);
+	printf("\n------------\n\n");
+	print_test_avl(terminates);
 }
