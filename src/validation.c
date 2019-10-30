@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 01:24:01 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 01:39:34 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ char *find_name(char *str)
 	else
 	{
 		i = 0;
-		while (str[i] && str[i] != ' ' && str[i] != '-' && str[i] != '\n')
+		while (str[i] != '\0' && str[i] != ' ' && str[i] != '-' && str[i] != '\n')
 		{
 			i++;
 		}
@@ -146,14 +146,14 @@ t_avl_str		*init_node(t_read *term, char *str, int *is_start)
 	char		*name;
 
 	i = 0;
-	while (str[i] != ' ' && str[i] != '-')
+	while (str[i] != ' ' && str[i] != '-' && str[i] && str[i] != '\n')
 		i++;
 	if (str[i] == '-')
 		ft_exit();
 	name = ft_str_dupl(i, str);// i + 1???
 	node = new_avl_str(name, new_room());
 
-	while (str[i + 1] != ' ')
+	while (str[i] && str[i + 1] != ' ')
 		i++;
 	if (*is_start == 1 || *is_start == -1)
 	{
