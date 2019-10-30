@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 01:09:20 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 01:15:57 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -645,7 +645,7 @@ int			main(int ac, char *av[])
 		ctnr_push_top(terminates.start->c.room.froms, new_elem(NULL));
 		not_dijkstra(terminates.start);
 		free(ctnr_pop_top(terminates.start->c.room.froms));
-		if (end->c.room.froms->top == NULL)
+		if (terminates.end->c.room.froms->top == NULL)
 			break ;
 		path_invert(terminates.end);
 		find_paths(terminates.start, terminates.end, sols, i);
