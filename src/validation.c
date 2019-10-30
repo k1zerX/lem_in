@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 01:51:50 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 02:00:00 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,9 @@ t_state		*new_state(void);
 t_avl_str	*new_avl_str(char *key, t_content c);
 t_content	new_edge(t_avl_str *room, t_state *state, unsigned char n);
 t_content	new_room(void);
+void		print_room(t_avl_str *node);
 
-void	add_to_list(t_str_list *list, char *s)
+void		add_to_list(t_str_list *list, char *s)
 {
 	t_str_list_elem *new;
 
@@ -41,42 +42,39 @@ void	add_to_list(t_str_list *list, char *s)
 	}
 }
 
-char *ft_str_dupl(int size, char*str)
+char		*ft_str_dupl(int size, char *str)
 {
-	char *res;
+	char	*res;
 
-	if (!(res = malloc(sizeof(char) * (size + 1))))
+	if (!(res = malloc(sizeof(char) * (size))))
 		ft_exit();
 	res = ft_strncpy(res, str, size);
-	res[size] = '\0';
 	return (res);
 }
 
-char *find_name(char *str)
+char		*find_name(char *str)
 {
-	char *name;
-	int i;
+	char	*name;
+	int		i;
 
-	if (*str == '#' && *(str + 1) != '#')//comment
-		return(NULL);
-	if (*str == '#')// st/end
+	if (*str == '#' && *(str + 1) != '#')
+		return (NULL);
+	if (*str == '#')
 		return (str);
 	else
 	{
 		i = 0;
-		while (str[i] != '\0' && str[i] != ' ' && str[i] != '-' && str[i] != '\n')
-		{
+		while (str[i] != '\0' && str[i] != ' ' && \
+				str[i] != '-' && str[i] != '\n')
 			i++;
-		}
 		if (i == 0 || str[0] == 'L')
 			ft_exit();
 		name = ft_str_dupl(i, str);
-
 	}
 	return (name);
 }
 
-char **rooms_split(char *str, char *s_n, char *e_n)
+char		**rooms_split(char *str, char *s_n, char *e_n)
 {
 	char	**arr;
 	char	*new;
@@ -91,7 +89,7 @@ char **rooms_split(char *str, char *s_n, char *e_n)
 	return (arr);
 }
 
-void	init_edges(t_read *term, char **arr)
+void		init_edges(t_read *term, char **arr)
 {
 	t_avl_str	*tmp;
 	t_avl_str	*tmp1;
@@ -118,7 +116,7 @@ void	init_edges(t_read *term, char **arr)
 	tmp1->c.room.edges = avl_str_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
 }
 
-int		push_edges(t_read *term, char *str, t_str_list *str_list)
+int			push_edges(t_read *term, char *str, t_str_list *str_list)
 {
 	char	s_n;
 	char	e_n;
@@ -126,12 +124,9 @@ int		push_edges(t_read *term, char *str, t_str_list *str_list)
 	s_n = 0;
 	e_n = 0;
 	init_edges(term, rooms_split(str, &s_n, &e_n));
-	// free(str);
 	while (gnl(0, &str) > 0)
 	{
-		// str[ft_strlen(str)] = '\0';
 		add_to_list(str_list, str);
-
 		if (!str || str[0] == '#')
 			continue ;
 		init_edges(term, rooms_split(str, &s_n, &e_n));
@@ -150,9 +145,8 @@ t_avl_str		*init_node(t_read *term, char *str, int *is_start)
 		i++;
 	if (str[i] == '-')
 		ft_exit();
-	name = ft_str_dupl(i, str);// i + 1???
+	name = ft_str_dupl(i, str);
 	node = new_avl_str(name, new_room());
-
 	while (str[i] && str[i + 1] != ' ')
 		i++;
 	if (*is_start == 1 || *is_start == -1)
@@ -174,7 +168,6 @@ void			is_valid(t_read *term, t_str_list *str_list)
 	is_start = 0;
 	while (gnl(0, &str) > 0)
 	{
-		// str[ft_strlen(str)] = '\0';
 		add_to_list(str_list, str);
 		if ((name = find_name(str)))
 		{
@@ -185,7 +178,8 @@ void			is_valid(t_read *term, t_str_list *str_list)
 				continue ;
 			}
 			if (!(tmp = avl_str_find(term->root, name, &ft_strcmp)))
-				term->root = avl_str_insert(term->root, init_node(term, str, &is_start), &ft_strcmp);
+				term->root = avl_str_insert(term->root, \
+				init_node(term, str, &is_start), &ft_strcmp);
 			else
 				term->max_paths = push_edges(term, str, str_list);
 		}
@@ -205,35 +199,30 @@ t_str_list		*is_valid_map(t_read *term)
 	str_list->end = NULL;
 	if (gnl(0, &str) <= 0 || (term->ants = ft_atoi(str)) <= 0)
 		ft_exit();
-	// str[ft_st/rlen(str)] = '\0';
 	add_to_list(str_list, str);
-
 	is_valid(term, str_list);
-
 	if (!term->max_paths)
 		ft_exit();
 	return (str_list);
 }
 
-void print_map(t_str_list_elem *start)
+void			print_map(t_str_list_elem *start)
 {
-	while(start)
+	while (start)
 	{
 		printf("%s\n", start->s);
 		start = start->next;
 	}
 }
 
-void free_str_list(t_str_list *term)
+void			free_str_list(t_str_list *term)
 {
-	while(term->start)
+	while (term->start)
 	{
 		free(term->start);
 		term->start = term->start->next;
 	}
 }
-
-void		print_room(t_avl_str *node);
 
 void	print_test_avl(t_read *terminates)
 {
