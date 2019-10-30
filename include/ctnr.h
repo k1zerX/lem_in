@@ -30,7 +30,7 @@ struct					s_ctnr
 
 struct					s_elem
 {
-	t_avl_str			*node;
+	t_avl_str			*edge;
 	t_elem				*next;
 	t_elem				*prev;
 };

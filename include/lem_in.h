@@ -15,6 +15,33 @@
 
 #include "types.h"
 
+struct						s_room
+{
+	t_avl_str				*edges;
+	t_ctnr					*froms; // peredelat' na t_edge *, ibo huy ego znaet
+	int						distance;
+	t_avl_str				*out_exc;
+	t_avl_str				*in_exc;
+	unsigned char			divided		: 1;
+	unsigned char			is_active	: 1;
+};
+
+struct						s_edge
+{
+	t_avl_str				*room;
+	t_state					*state;
+	unsigned char			existance	: 1;
+	unsigned char			n			: 1;
+};
+
+struct						s_state
+{
+	char					weight;
+	unsigned char			is_active	: 1;
+	unsigned char			cross		: 2;
+	t_avl_str				*ends[2];
+};
+
 struct					s_path
 {
 	t_ctnr				*path;

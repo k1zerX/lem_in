@@ -15,24 +15,10 @@
 
 # include "ctnr.h"
 # include "types.h"
+# include "lem_in.h"
 # include <stdlib.h>
 
 # define HEIGHT(x) ((x) ? (x->height) : (0))
-
-struct						s_edge
-{
-	t_avl_str				*room;
-	t_state					*state;
-	unsigned char			existance	: 1;
-	unsigned char			n			: 1;
-};
-
-struct						s_room
-{
-	t_avl_str				*edges;
-	t_ctnr					*froms;
-	int						distance;
-};
 
 union						u_content
 {
@@ -55,14 +41,6 @@ struct						s_avl_int
 	t_avl_int				*left;
 	t_avl_int				*right;
 	unsigned char			height;
-};
-
-struct						s_state
-{
-	char					weight;
-	unsigned char			is_active	: 1;
-	unsigned char			cross		: 2;
-	t_edge					*ends[2];
 };
 
 t_avl_str					*avl_str_balance(t_avl_str *node);
