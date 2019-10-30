@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 01:39:34 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 01:51:50 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ int		push_edges(t_read *term, char *str, t_str_list *str_list)
 	// free(str);
 	while (gnl(0, &str) > 0)
 	{
-		str[ft_strlen(str)] = '\0';
+		// str[ft_strlen(str)] = '\0';
 		add_to_list(str_list, str);
 
 		if (!str || str[0] == '#')
@@ -174,7 +174,7 @@ void			is_valid(t_read *term, t_str_list *str_list)
 	is_start = 0;
 	while (gnl(0, &str) > 0)
 	{
-		str[ft_strlen(str)] = '\0';
+		// str[ft_strlen(str)] = '\0';
 		add_to_list(str_list, str);
 		if ((name = find_name(str)))
 		{
@@ -205,7 +205,7 @@ t_str_list		*is_valid_map(t_read *term)
 	str_list->end = NULL;
 	if (gnl(0, &str) <= 0 || (term->ants = ft_atoi(str)) <= 0)
 		ft_exit();
-	str[ft_strlen(str)] = '\0';
+	// str[ft_st/rlen(str)] = '\0';
 	add_to_list(str_list, str);
 
 	is_valid(term, str_list);
