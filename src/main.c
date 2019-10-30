@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 01:15:57 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 01:28:07 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -704,7 +704,7 @@ int			main(int ac, char *av[])
 		++sols;
 		++i;
 	}
-	sols -= terminates.max_paths;
+	sols -= i - 1;
 	sols += ind - 1;
 	(void)ind;
 	print_map(str_list->start);
