@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lem_in.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 18:59:18 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 00:09:10 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/30 20:35:06 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ struct						s_room
 	t_avl_str				*out_exc;
 	t_avl_str				*in_exc;
 	unsigned char			divided		: 1;
+	unsigned char			shortest	: 1;
 	unsigned char			is_active	: 1;
 };
 
@@ -62,9 +63,17 @@ struct					s_ant
 	int					ind;
 };
 
-t_avl_str		*new_avl_str(char *key, t_content c);
-t_content		new_edge(t_avl_str *room, t_state *state);
-t_content		new_room(void);
-t_state			*new_state(void);
+struct					s_my_queue
+{
+	t_qelem				*start;
+	t_qelem				*end;
+};
+
+struct					s_qelem
+{
+	t_qelem				*next;
+	t_avl_str			*room;
+	t_avl_str			*edge_in;
+};
 
 #endif

@@ -6,13 +6,13 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 00:12:05 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 00:16:08 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "read.h"
 #include "lem_in.h"
-
+/*
 void		ft_exit(void)
 {
 	exit(1);
@@ -258,4 +258,4 @@ int			main()
 	free_term(terminates);
 	free_str_list(str_list);
 	return (0);
-}
+}*/

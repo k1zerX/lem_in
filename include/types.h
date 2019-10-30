@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 18:54:24 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/29 19:29:37 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/30 20:34:50 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,8 @@ typedef enum e_type			t_type;
 typedef struct	s_path	t_path;
 typedef struct	s_ants	t_ants;
 typedef struct	s_ant	t_ant;
+
+typedef struct s_my_queue	t_my_queue;
+typedef struct s_qelem	t_qelem;
 
 #endif
