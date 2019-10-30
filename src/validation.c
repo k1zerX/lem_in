@@ -6,20 +6,15 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/30 19:44:21 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 00:12:05 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "read.h"
+#include "lem_in.h"
 
-t_avl_str		*new_avl_str(char *key, t_content c);
-t_content		new_edge(t_avl_str *room, t_state *state);
-t_content		new_room(void);
-t_state			*new_state(void);
-
-void		ft_exit(char *str)
+void		ft_exit(void)
 {
-	ft_putendl(str);
 	exit(1);
 }
 
@@ -28,8 +23,7 @@ void	add_to_list(t_str_list *list, char *s)
 	t_str_list_elem *new;
 
 	if (!(new = (t_str_list_elem *)malloc(sizeof(t_str_list_elem))))
-		ft_exit("malloc");
-
+		ft_exit();
 	new->s = s;
 	new->next = NULL;
 	if (!list->start && !list->end)
@@ -51,7 +45,7 @@ char *ft_str_dupl(int size, char*str)
 	char *res;
 
 	if (!(res = malloc(sizeof(char) * (size + 1))))
-		ft_exit("malloc");
+		ft_exit();
 	res = ft_strncpy(res, str, size);
 	res[size] = '\0';
 	return (res);
@@ -60,16 +54,12 @@ char *ft_str_dupl(int size, char*str)
 char *find_name(char *str)
 {
 	char *name;
-		int i;
+	int i;
 
 	if (*str == '#' && *(str + 1) != '#')//comment
-	{
 		return(NULL);
-	}
 	if (*str == '#')// st/end
-	{
 		return (str);
-	}
 	else
 	{
 		i = 0;
@@ -78,7 +68,7 @@ char *find_name(char *str)
 			i++;
 		}
 		if (i == 0 || str[0] == 'L')
-			ft_exit("error");
+			ft_exit();
 		name = ft_str_dupl(i, str);
 
 	}
@@ -93,19 +83,8 @@ char **rooms_split(char *str, char *s_n, char *e_n)
 
 	i = 0;
 	if (!ft_strchr(str, '-'))
-		ft_exit("There's no edges in one of the rooms");
-	arr = ft_strsplit(str, '-');//to check!!!!
-	// while (arr[1][i] != '\0')
-	// 	i++;
-	// if (!(new = malloc(sizeof(char) * (i))))
-	// 	ft_exit("malloc");
-	// new = ft_str_dupl(i, arr[1])
-	
-	// ft_strncpy(new, arr[1], i + 1);
-	// new[i] = '\0';
-	// free(arr[1]);
-	// arr[1] = new;
-
+		ft_exit();
+	arr = ft_strsplit(str, '-');
 	arr[2] = s_n;
 	arr[3] = e_n;
 	return (arr);
@@ -119,11 +98,11 @@ void	init_edges(t_read *term, char **arr)
 	t_state		*state;
 
 	if (ft_strequ(arr[0], arr[1]))
-		ft_exit("error same rooms");
+		ft_exit();
 	tmp1 = avl_str_find(term->root, arr[0], &ft_strcmp);
 	tmp2 = avl_str_find(term->root, arr[1], &ft_strcmp);
 	if (!tmp1 || !tmp2)
-		ft_exit("Wrong room name!");
+		ft_exit();
 	free(arr);
 	if (tmp1 == term->start || tmp2 == term->start)
 		++(*(arr[2]));
@@ -144,7 +123,7 @@ int		push_edges(t_read *term, char *str, t_str_list *str_list)
 	s_n = 0;
 	e_n = 0;
 	init_edges(term, rooms_split(str, &s_n, &e_n));
-	free(str);
+	// free(str);
 	while (gnl(0, &str) > 0)
 	{
 		str[ft_strlen(str) - 1] = '\0';
@@ -167,7 +146,7 @@ t_avl_str		*init_node(t_read *term, char *str, int *is_start)
 	while (str[i] != ' ' && str[i] != '-')
 		i++;
 	if (str[i] == '-')
-		ft_exit("Error, no such room");
+		ft_exit();
 	name = ft_str_dupl(i, str);// i + 1???
 	node = new_avl_str(name, new_room());
 
@@ -216,20 +195,20 @@ t_str_list		*is_valid_map(t_read *term)
 	t_str_list		*str_list;
 
 	if (!(str_list = (t_str_list *)malloc(sizeof(t_str_list))))
-		ft_exit("malloc");
+		ft_exit();
 	term->root = NULL;
 	term->ants = 0;
 	str_list->start = NULL;
 	str_list->end = NULL;
 	if (gnl(0, &str) <= 0 || (term->ants = ft_atoi(str)) <= 0)
-		ft_exit("Error, ants");
+		ft_exit();
 	str[ft_strlen(str) - 1] = '\0';
 	add_to_list(str_list, str);
 
 	is_valid(term, str_list);
 
 	if (!term->max_paths)
-		ft_exit("there is no edges");
+		ft_exit();
 	return (str_list);
 }
 
@@ -242,17 +221,26 @@ void print_map(t_str_list_elem *start)
 	}
 }
 
+void free_str_list(t_str_list *term)
+{
+	while(term->start)
+	{
+		free(term->start);
+		term->start = term->start->next;
+	}
+}
+
+void		print_room(t_avl_str *node);
+
 void	print_test_avl(t_read *terminates)
 {
 	printf("root = %s\n", terminates->root->key);
-	printf("root->right = %s\n", terminates->root->right->key);
-	printf("root->left = %s\n", terminates->root->left->key);
 	printf("start = %s\n", terminates->start->key);
 	printf("end = %s\n", terminates->end->key);
 	printf("max_path = %d\n", terminates->max_paths);
 	printf("ants = %d\n", terminates->ants);
+	avl_str_infix(terminates->root, &print_room);
 }
-
 
 int			main()
 {
@@ -260,9 +248,14 @@ int			main()
 	t_str_list	*str_list;
 	
 	if (!(terminates = (t_read *)malloc(sizeof(t_read))))
-		ft_exit("malloc");
+		ft_exit();
 	str_list = is_valid_map(terminates);
+
 	print_map(str_list->start);
 	printf("\n------------\n\n");
 	print_test_avl(terminates);
+
+	free_term(terminates);
+	free_str_list(str_list);
+	return (0);
 }
