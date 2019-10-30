@@ -6,17 +6,18 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 00:12:05 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 00:44:51 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "read.h"
 #include "lem_in.h"
 
-void		ft_exit(void)
-{
-	exit(1);
-}
+void		ft_exit(void);
+t_state		*new_state(void);
+t_avl_str	*new_avl_str(char *key, t_content c);
+t_content	new_edge(t_avl_str *room, t_state *state, unsigned char n);
+t_content	new_room(void);
 
 void	add_to_list(t_str_list *list, char *s)
 {
@@ -92,8 +93,8 @@ char **rooms_split(char *str, char *s_n, char *e_n)
 
 void	init_edges(t_read *term, char **arr)
 {
-	t_avl_str	*tmp1;
 	t_avl_str	*tmp;
+	t_avl_str	*tmp1;
 	t_avl_str	*tmp2;
 	t_state		*state;
 
@@ -109,9 +110,11 @@ void	init_edges(t_read *term, char **arr)
 	if (tmp1 == term->end || tmp2 == term->end)
 		++(*(arr[3]));
 	state = new_state();
-	tmp = new_avl_str(tmp1->key, new_edge(tmp1, state));
+	tmp = new_avl_str(tmp1->key, new_edge(tmp2, state, 1));
+	state->ends[0] = tmp;
 	tmp2->c.room.edges = avl_str_insert(tmp2->c.room.edges, tmp, &ft_strcmp);
-	tmp = new_avl_str(tmp2->key, new_edge(tmp2, state));
+	tmp = new_avl_str(tmp2->key, new_edge(tmp1, state, 0));
+	state->ends[1] = tmp;
 	tmp1->c.room.edges = avl_str_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
 }
 
@@ -240,22 +243,4 @@ void	print_test_avl(t_read *terminates)
 	printf("max_path = %d\n", terminates->max_paths);
 	printf("ants = %d\n", terminates->ants);
 	avl_str_infix(terminates->root, &print_room);
-}
-
-int			main()
-{
-	t_read		*terminates;
-	t_str_list	*str_list;
-	
-	if (!(terminates = (t_read *)malloc(sizeof(t_read))))
-		ft_exit();
-	str_list = is_valid_map(terminates);
-
-	print_map(str_list->start);
-	printf("\n------------\n\n");
-	print_test_avl(terminates);
-
-	free_term(terminates);
-	free_str_list(str_list);
-	return (0);
 }
