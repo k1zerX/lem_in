@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   avl_int_balance.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/11 23:24:00 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/29 19:26:11 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 07:33:59 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "avl.h"
 
-static char		bfactor(t_avl_int *node)
+static char			bfactor(t_avl_int *node)
 {
 	return (HEIGHT(node->right) - HEIGHT(node->left));
 }
 
-static void		fixheight(t_avl_int *node)
+static void			fixheight(t_avl_int *node)
 {
 	unsigned char	hl;
 	unsigned char	hr;
