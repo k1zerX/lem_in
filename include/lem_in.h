@@ -6,22 +6,22 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 18:59:18 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 07:11:46 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 07:39:54 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEM_IN_H
 # define LEM_IN_H
 
-#include "types.h"
-#include "read.h"
-#include "avl.h"
-#include "ctnr.h"
+# include "types.h"
+# include "read.h"
+# include "avl.h"
+# include "ctnr.h"
 
 struct							s_room
 {
 	t_avl_str					*edges;
-	t_ctnr						*froms; // peredelat' na t_edge *, ibo huy ego znaet
+	t_ctnr						*froms;
 	int							distance;
 	t_avl_str					*out_exc;
 	t_avl_str					*in_exc;
@@ -91,20 +91,20 @@ struct							s_list_elem
 	t_state						*state;
 };
 
-struct					s_min
+struct							s_min
 {
-	int					min;
-	int					ind;
+	int							min;
+	int							ind;
 };
 
 void							ft_exit(void);
 t_state							*new_state(void);
 t_avl_str						*new_avl_str(char *key, t_content c);
-t_content						new_edge(t_avl_str *room, t_state *state, unsigned char n);
+t_content						new_edge(t_avl_str *room, t_state *state, \
+										unsigned char n);
 t_content						new_room(void);
 void							print_map(t_str_list_elem *start);
 void							free_str_list(t_str_list *term);
 t_str_list						*is_valid_map(t_read *term);
-
 
 #endif
