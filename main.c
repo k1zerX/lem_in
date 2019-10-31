@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 05:25:53 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 06:20:24 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,16 @@ char	*g_str_err[LEN] =
 };
 */
 void			free_str_list(t_str_list *term);
+
+void		my_del(void *ptr)
+{
+	char **gg;
+
+
+	gg = *(char **)ptr;
+	free(*gg);
+	*gg = NULL;
+}
 
 void		ft_exit(void)
 {
@@ -111,6 +121,7 @@ void		print_avl_str(t_avl_str *node)
 
 void		del_avl_str(t_avl_str *node)
 {
+	free(node->key);
 	free(node);
 }
 
@@ -186,6 +197,7 @@ void		del_list(t_state_list *list)
 	while (tmp)
 	{
 		next = tmp->next;
+		free(tmp->state);
 		free(tmp);
 		tmp = next;
 	}
@@ -216,13 +228,18 @@ void		smart_free_rec(t_avl_str *root, t_my_queue *q, t_state_list *l)
 	smart_free_rec(root->left, q, l);
 	smart_free_rec(root->right, q, l);
 	if (!root->c.edge.state->is_active)
+	{
+//		free(root);
 		return ;
+	}
 	root->c.edge.state->is_active = 0;
 	list_add(l, root->c.edge.state);
 	edge_in = root->c.edge.state->ends[root->c.edge.n];
 	room = edge_in->c.edge.room;
 	queue_push(q, room, edge_in);
-	free(root);
+//	free(root);
+		printf("before:\n");
+		printf("after:\n");
 }
 
 void		smart_free(t_avl_str *room)
@@ -249,18 +266,9 @@ void		smart_free(t_avl_str *room)
 
 void		del_sols(t_path **sols, int n)
 {
-	int		i;
-
-	i = 0;
-	while (i < n)
-	{
-//		if (sols[i]->path)
-//			ctnr_clear(sols[i]->path, &del_elem);
-//		free(sols[i]->path);
-//		free(sols[i]);
-		++i;
-	}
-	free(sols);
+	(void)sols;
+	(void)n;
+	exit(0);
 }
 
 void		reset_suffix(t_avl_str *root, t_my_queue *queue)
@@ -838,11 +846,8 @@ int			main(int ac, char *av[])
 		++i;
 	}
 	sols -= ind - 1;
-//	del_sols(sols, i);
-	smart_free(terminates.start);
 	free_str_list(str_list);
-//	avl_str_infix(terminates.root, &del_avl_str);
+	smart_free(terminates.start);
+	del_sols(sols, i);
 	return (0);
-//	printf("\n------------\n\n");
-//	print_test_avl(&terminates);
 }

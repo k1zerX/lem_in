@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 05:54:05 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 06:13:34 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,9 @@ void		init_edges(t_read *term, char **arr, char *s_n, char *e_n)
 	tmp = new_avl_str(tmp2->key, new_edge(tmp1, state, 0));
 	state->ends[1] = tmp;
 	tmp1->c.room.edges = avl_str_insert(tmp1->c.room.edges, tmp, &ft_strcmp);
+	free(arr[0]);
+	free(arr[1]);
+	free(arr);
 }
 
 int			push_edges(t_read *term, char *str, t_str_list *str_list)
@@ -183,6 +186,7 @@ void			is_valid(t_read *term, t_str_list *str_list)
 			else
 				term->max_paths = push_edges(term, str, str_list);
 		}
+		free(name);
 	}
 }
 
@@ -217,10 +221,16 @@ void			print_map(t_str_list_elem *start)
 
 void			free_str_list(t_str_list *term)
 {
-	while (term->start)
+	t_str_list_elem		*tmp;
+	t_str_list_elem		*next;
+
+	tmp = term->start;
+	while (tmp)
 	{
-		free(term->start);
-		term->start = term->start->next;
+		next = tmp->next;
+		free(tmp->s);
+		free(tmp);
+		tmp = next;
 	}
 }
 
