@@ -90,7 +90,25 @@ SRC		=	ft_atoi.c			\
 			ft_swap.c			\
 			ft_tolower.c		\
 			ft_toupper.c		\
-			gnl.c
+			gnl.c			\
+			f_big_x.c		\
+			f_c.c			\
+			f_d.c			\
+			f_f.c			\
+			f_i.c			\
+			f_o.c			\
+			f_p.c			\
+			f_percent.c		\
+			f_s.c			\
+			f_u.c			\
+			f_x.c			\
+			ft_printf.c		\
+			tools2.c		\
+			tools.c			\
+			tools3.c		\
+			tools4.c		\
+			tools5.c		\
+
 HDR 	=	$(wildcard $(HDRDIR)*.h)
 OBJ		=	$(SRC:%.c=%.o)
 IFLAG	=	$(addprefix -I,$(HDRDIR))
