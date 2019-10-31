@@ -6,7 +6,7 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 18:59:18 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/30 20:35:06 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 02:58:30 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ struct						s_state
 struct					s_path
 {
 	t_ctnr				*path;
-	char				len;	// sdelat; int
-	char				ants;	// sdelat' int
+	int					len;
+	int					ants;
 };
 
 struct					s_ants

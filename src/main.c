@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 01:28:07 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 03:55:45 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ char	*g_str_err[LEN] =
 	[VALID_ERR] = "fuck\n",
 };
 */
+void			free_str_list(t_str_list *term);
 
 void		ft_exit(void)
 {
@@ -159,7 +160,23 @@ t_qelem		*queue_pop(t_my_queue *queue)
 	tmp->next = NULL;
 	return (tmp);
 }
+/*
+void		smart_free_rec(t_avl_str *root, t_my_queue *q)
 
+void		smart_free(t_avl_str *room)
+{
+	t_my_queue		q;
+	t_qelem			*tmp;
+
+	q = (t_my_queue){NULL, NULL};
+	while (q.start)
+	{
+		tmp = queue_pop(&queue);
+		smart_free_rec(tmp->room->c.room.edges, q);
+		free(tmp);
+	}
+}
+*/
 void		reset_suffix(t_avl_str *root, t_my_queue *queue)
 {
 	t_avl_str	*room;
@@ -180,7 +197,7 @@ void		reset_suffix(t_avl_str *root, t_my_queue *queue)
 void		reset(t_avl_str *start)
 {
 	t_my_queue		queue;
-	t_qelem		*tmp;
+	t_qelem			*tmp;
 
 	queue = (t_my_queue){NULL, NULL};
 	queue_push(&queue, start, NULL);
@@ -345,7 +362,11 @@ void	not_dijkstra_fill(t_avl_str *room, t_avl_str *edge_in, t_my_queue *queue)
 //			abcdefghijk(room->c.room.in_exc, queue);
 		}
 		if (!prev_room->c.room.shortest && room->c.room.divided) // from other to in
+		{
+			if (room->c.room.in_exc == NULL)
+				printf("%s : %p\n", room->key, room);
 			abcdefghijk(room->c.room.in_exc, queue);
+		}
 		if (!room->c.room.shortest)
 			not_dijkstra_suffix(room->c.room.edges, queue, 0);
 //		printf("\t\tafter:\n");
@@ -389,8 +410,8 @@ void		print_path(t_path path)
 	tmp = path.path->top;
 	if (tmp)
 	{
-//		printf("\t%d to %d: ", path.ants, path.len);
-//			printf("%s -> ", tmp->edge->c.edge.room->key);
+		printf("\t%d to %d: ", path.ants, path.len);
+			printf("%s -> ", tmp->edge->c.edge.room->key);
 		tmp = tmp->next;
 		while (tmp->next)
 		{
@@ -400,10 +421,10 @@ void		print_path(t_path path)
 			right = room->c.room.out_exc;
 			right = right->c.edge.state->ends[right->c.edge.n];
 //			printf("(%s<-%s->%s) ==> ", left->c.edge.room->key , room->key, right->c.edge.room->key);
-	//		printf("%s -> ", room->key);
+			printf("%s -> ", room->key);
 			tmp = tmp->next;
 		}
-//		printf("%s\n", tmp->edge->c.edge.room->key);
+		printf("%s\n", tmp->edge->c.edge.room->key);
 	}
 }
 
@@ -471,37 +492,41 @@ void		path_invert(t_avl_str *end)
 //	printf("\tafter:\n");
 }
 
-void		check_shortest_rec(t_avl_str *room)
+void		check_shortest_rec(t_avl_str *edge_out)
 {
-	t_avl_str	*next;
-	t_avl_str	*edge;
+	t_avl_str	*edge_in;
 	t_elem		*tmp;
-	
+	t_avl_str	*room;
+
+		
+	edge_in = edge_out->c.edge.state->ends[edge_out->c.edge.n];
+	room = edge_in->c.edge.room;
 	tmp = room->c.room.froms->top;
 	room->c.room.shortest = 1;
 	if (tmp)
 	{
+		edge_out = room->c.room.froms->top->edge;
+//		printf("\t%s - %s - %s\n", edge_in->c.edge.room->key, room->key, edge_out->c.edge.room->key);
 		room->c.room.divided = 1;
-		edge = room->c.room.froms->top->edge;
-		next = edge->c.edge.state->ends[edge->c.edge.n]->c.edge.room;
-		check_shortest_rec(next);
+		room->c.room.in_exc = edge_out; //
+		room->c.room.out_exc = edge_in; //
+		check_shortest_rec(edge_out);
 	}
 }
 
 void		check_shortest(t_avl_str *end)
 {
-	t_avl_str	*next;
 	t_avl_str	*edge;
 	t_elem		*tmp;
 
+//	printf("AAAAAAAAAAAAAAAAAAAAA %s\n", end->key);
 //	printf(" %s", end->key);
 	tmp = end->c.room.froms->top;
 	end->c.room.shortest = 1;
 	if (tmp)
 	{
 		edge = end->c.room.froms->top->edge;
-		next = edge->c.edge.state->ends[edge->c.edge.n]->c.edge.room;
-		check_shortest_rec(next);
+		check_shortest_rec(edge);
 	}
 }
 
@@ -536,11 +561,11 @@ void		find_paths(t_avl_str *start, t_avl_str *end, t_path **sols, int len)
 			ctnr_push_bot(tmp->path, new_elem(node->c.room.edges));
 			++tmp->len;
 			edge_out = node->c.room.froms->top->edge;
-			node->c.room.divided = 1;
+//			node->c.room.divided = 1;
 //			printf("||| %s, %d\n", node->key, node->c.room.divided);
 //
-			node->c.room.in_exc = edge_in; //
-			node->c.room.out_exc = edge_out; //
+//			node->c.room.in_exc = edge_in; //
+//			node->c.room.out_exc = edge_out; //
 //
 			edge_in = edge_out->c.edge.state->ends[edge_out->c.edge.n];
 			node = edge_in->c.edge.room;
@@ -632,6 +657,7 @@ int			main(int ac, char *av[])
 	
 	terminates = (t_read){NULL, NULL, NULL, 0, 0};
 	str_list = is_valid_map(&terminates);
+	print_map(str_list->start);
 	if (!(sols = malloc(terminates.max_paths * sizeof(t_path *))))
 		ft_exit();
 //	printf("terminates.ants  = %d\n", terminates.ants);
@@ -643,7 +669,9 @@ int			main(int ac, char *av[])
 	{
 //		printf("%d:\n", i);
 		ctnr_push_top(terminates.start->c.room.froms, new_elem(NULL));
+//		printf("before:\n");
 		not_dijkstra(terminates.start);
+//		printf("after:\n");
 		free(ctnr_pop_top(terminates.start->c.room.froms));
 		if (terminates.end->c.room.froms->top == NULL)
 			break ;
@@ -662,19 +690,15 @@ int			main(int ac, char *av[])
 			if (n <= 0 || div == 0 || (div == 1 && mod == 0))
 			{
 				n += paths[-1].ants * j;
-				paths[-1].ants = 0;
 				break ;
 			}
 			++paths;
 			++j;
 		}
-		if (j == i)
-		{
-			n += paths[-1].ants * j;
-			paths[-1].ants = 0;
-		}
+		paths[-1].ants = 0;
 		div = n / j;
 		mod = n % j;
+//		printf("%d | %d / %d = %d | %d %% %d = %d\n", i, n, j, div, n, j, mod);
 		--paths;
 		--j;
 		int		buf = 0;
@@ -689,12 +713,14 @@ int			main(int ac, char *av[])
 		while (j >= 0)
 		{
 			paths->ants += buf;
+//			printf("%d\n", paths->ants);
 			buf = paths->ants;
 			paths->ants += div + 1;
 			--j;
 			--paths;
 		}
-		print_paths(terminates.start, *sols, i);
+//		printf("after\n");
+//		print_paths(terminates.start, *sols, i); //
 		if ((*sols)->ants + (*sols)->len - 1 < min || min == -1)
 		{
 			min = (*sols)->ants + (*sols)->len - 1;
@@ -706,8 +732,6 @@ int			main(int ac, char *av[])
 	}
 	sols -= i - 1;
 	sols += ind - 1;
-	(void)ind;
-	print_map(str_list->start);
 	printf("\n");
 	ingame = (t_ants){NULL, NULL};
 	i = 0;
@@ -730,6 +754,7 @@ int			main(int ac, char *av[])
 	return (0);
 //	printf("\n------------\n\n");
 //	print_test_avl(&terminates);
-//	free_term(&terminates);
-//	free_str_list(str_list);
+//	smart_free(start);
+//	avl_str_infix(terminates.root, &del_avl_str);
+	free_str_list(str_list);
 }
