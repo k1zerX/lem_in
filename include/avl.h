@@ -6,19 +6,47 @@
 /*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/15 20:40:40 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 07:41:59 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 08:06:02 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef AVL_H
 # define AVL_H
 
-# include "ctnr.h"
 # include "types.h"
 # include "lem_in.h"
+# include "ctnr.h"
 # include <stdlib.h>
 
 # define HEIGHT(x) ((x) ? (x->height) : (0))
+
+struct						s_room
+{
+	t_avl_str				*edges;
+	t_ctnr					*froms;
+	int						distance;
+	t_avl_str				*out_exc;
+	t_avl_str				*in_exc;
+	unsigned char			divided		: 1;
+	unsigned char			shortest	: 1;
+	unsigned char			is_active	: 1;
+};
+
+struct						s_edge
+{
+	t_avl_str				*room;
+	t_state					*state;
+	unsigned char			existance	: 1;
+	unsigned char			n			: 1;
+};
+
+struct						s_state
+{
+	char					weight;
+	unsigned char			is_active	: 1;
+	unsigned char			cross		: 2;
+	t_avl_str				*ends[2];
+};
 
 union						u_content
 {

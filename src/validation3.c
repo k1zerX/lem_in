@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 07:20:43 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 07:24:12 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 07:58:21 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,14 +86,12 @@ t_avl_str		*init_node(t_read *term, char *str, int *is_start)
 	return (node);
 }
 
-void			is_valid(t_read *term, t_str_list *str_list)
+void			is_valid(t_read *term, t_str_list *str_list, int is_start)
 {
 	char		*str;
 	char		*name;
 	t_avl_str	*tmp;
-	int			is_start;
 
-	is_start = 0;
 	while (gnl(0, &str) > 0)
 	{
 		add_to_list(str_list, str);
@@ -108,7 +106,8 @@ void			is_valid(t_read *term, t_str_list *str_list)
 				continue ;
 			}
 			if (!(tmp = avl_str_find(term->root, name, &ft_strcmp)))
-				term->root = avl_str_insert(term->root, init_node(term, str, &is_start), &ft_strcmp);
+				term->root = avl_str_insert(term->root, \
+						init_node(term, str, &is_start), &ft_strcmp);
 			else
 				term->max_paths = push_edges(term, str, str_list);
 		}
@@ -130,7 +129,7 @@ t_str_list		*is_valid_map(t_read *term)
 	if (gnl(0, &str) <= 0 || (term->ants = ft_atoi(str)) <= 0)
 		ft_exit();
 	add_to_list(str_list, str);
-	is_valid(term, str_list);
+	is_valid(term, str_list, 0);
 	if (!term->max_paths)
 		ft_exit();
 	return (str_list);
