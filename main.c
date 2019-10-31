@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 06:49:56 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 07:11:48 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,11 +264,8 @@ void		all_abcdefghijk(t_avl_str *edge_out, t_my_queue *queue, t_avl_str *start, 
 	if (!room->c.room.shortest)
 		return ;
 	if (room->c.room.divided && edge_out == room->c.room.out_exc)
-	{
-		if (!room->c.room.is_active)
+		if (!room->c.room.is_active && ((room->c.room.is_active = 0) || 1))
 			return ;
-		room->c.room.is_active = 0;
-	}
 	if (room == start)
 	{
 		if (*len)
@@ -344,11 +341,8 @@ void		abcdefghijk(t_avl_str *edge_out, t_my_queue *queue)
 	edge_in = edge_out->c.edge.state->ends[edge_out->c.edge.n];
 	room = edge_in->c.edge.room;
 	if (room->c.room.divided && edge_out == room->c.room.out_exc)
-	{
-		if (!room->c.room.is_active)
+		if (!room->c.room.is_active && ((room->c.room.is_active = 0) || 1))
 			return ;
-		room->c.room.is_active = 0;
-	}
 	buf = edge_out->c.edge.room->c.room.distance + edge_out->c.edge.state->weight;
 	if (room->c.room.froms->top)
 	{
@@ -602,30 +596,12 @@ void		print_ants(t_path **sols, int min, int ind)
 	}
 }
 
-void		count_ants(t_path *paths, int n, int i)
+void		count_ants2(t_path *paths, int n, int j)
 {
 	int		buf;
 	int		div;
 	int		mod;
-	int		j;
 
-	paths[-1].ants = 0;
-	j = 1;
-	while (j < i)
-	{
-		paths[-1].ants = paths->len - paths[-1].len;
-		n -= paths[-1].ants * j;
-		div = n / j;
-		mod = n % j;
-		if (n <= 0 || div == 0 || (div == 1 && mod == 0))
-		{
-			n += paths[-1].ants * j;
-			break ;
-		}
-		++paths;
-		++j;
-	}
-	paths[-1].ants = 0;
 	div = n / j;
 	mod = n % j;
 	--paths;
@@ -649,19 +625,61 @@ void		count_ants(t_path *paths, int n, int i)
 	}
 }
 
+void		count_ants(t_path *paths, int n, int i)
+{
+	int		div;
+	int		mod;
+	int		j;
+
+	paths[-1].ants = 0;
+	j = 1;
+	while (j < i)
+	{
+		paths[-1].ants = paths->len - paths[-1].len;
+		n -= paths[-1].ants * j;
+		div = n / j;
+		mod = n % j;
+		if (n <= 0 || div == 0 || (div == 1 && mod == 0))
+		{
+			n += paths[-1].ants * j;
+			break ;
+		}
+		++paths;
+		++j;
+	}
+	paths[-1].ants = 0;
+	count_ants2(paths, n, j);
+}
+
+int			main_cycle(t_path **sols, t_min *min, t_read *terminates)
+{
+	int		i;
+
+	i = 1;
+	while (i <= terminates->max_paths)
+	{
+		ctnr_push_top(terminates->start->c.room.froms, new_elem(NULL));
+		not_dijkstra(terminates->start);
+		free(ctnr_pop_top(terminates->start->c.room.froms));
+		if (terminates->end->c.room.froms->top == NULL)
+			break ;
+		path_invert(terminates->end);
+		find_paths(terminates->start, terminates->end, sols, i);
+		count_ants(*sols + 1, terminates->ants, i);
+		if ((*sols)->ants + (*sols)->len - 1 < min->min || min->min == -1)
+			*min = (t_min){(*sols)->ants + (*sols)->len - 1, i};
+		reset(terminates->start);
+		++sols;
+		++i;
+	}
+	return (i);
+}
+
 int			main(int ac, char *av[])
 {
 	int		i;
-	int		j;
-	int		n;
-	t_state *state;
-	t_edge	*edge;
 	t_path	**sols;
-	t_path	*paths;
-	int		div;
-	int		mod;
-	int		min;
-	int		ind;
+	t_min	min;
 	t_read		terminates;
 	t_str_list	*str_list;
 	
@@ -670,31 +688,11 @@ int			main(int ac, char *av[])
 	print_map(str_list->start);
 	if (!(sols = ft_memalloc(terminates.max_paths * sizeof(t_path *))))
 		ft_exit();
-	min = -1;
-	i = 1;
-	while (i <= terminates.max_paths)
-	{
-		ctnr_push_top(terminates.start->c.room.froms, new_elem(NULL));
-		not_dijkstra(terminates.start);
-		free(ctnr_pop_top(terminates.start->c.room.froms));
-		if (terminates.end->c.room.froms->top == NULL)
-			break ;
-		path_invert(terminates.end);
-		find_paths(terminates.start, terminates.end, sols, i);
-		count_ants(*sols + 1, terminates.ants, i);
-		if ((*sols)->ants + (*sols)->len - 1 < min || min == -1)
-		{
-			min = (*sols)->ants + (*sols)->len - 1;
-			ind = i;
-		}
-		reset(terminates.start);
-		++sols;
-		++i;
-	}
-	if (min == -1)
+	min.min = -1;
+	i = main_cycle(sols, &min, &terminates);
+	if (min.min == -1)
 		ft_exit();
-	sols -= i - 1;
-	print_ants(sols + ind - 1, min, ind);
+	print_ants(sols + min.ind - 1, min.min, min.ind);
 	free_str_list(str_list);
 	smart_free(terminates.start);
 	del_sols(sols, i);

@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 18:59:18 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 06:43:01 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 07:11:46 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,12 @@ struct							s_list_elem
 {
 	t_list_elem					*next;
 	t_state						*state;
+};
+
+struct					s_min
+{
+	int					min;
+	int					ind;
 };
 
 void							ft_exit(void);
