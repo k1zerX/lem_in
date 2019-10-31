@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   avl_str_remove.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: etuffleb <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/25 20:50:30 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/29 19:17:56 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 07:39:15 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ static t_avl_str	*removemin(t_avl_str *node)
 	return (avl_str_balance(node));
 }
 
-t_avl_str	*avl_str_remove(t_avl_str *root, char *key, \
-		int (*cmp)(char *a, char *b))
+t_avl_str			*avl_str_remove(t_avl_str *root, char *key, \
+				int (*cmp)(char *a, char *b))
 {
 	int		buf;
 	t_avl_str	*l;
