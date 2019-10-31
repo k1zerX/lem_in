@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lem_in.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbatz <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 18:59:18 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 02:58:30 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 06:24:57 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,5 +75,15 @@ struct					s_qelem
 	t_avl_str			*room;
 	t_avl_str			*edge_in;
 };
+
+
+void		ft_exit(void);
+t_state		*new_state(void);
+t_avl_str	*new_avl_str(char *key, t_content c);
+t_content	new_edge(t_avl_str *room, t_state *state, unsigned char n);
+t_content	new_room(void);
+void		print_room(t_avl_str *node);
+
+
 
 #endif
