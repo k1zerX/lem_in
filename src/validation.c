@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 05:26:16 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 05:54:05 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ char		*ft_str_dupl(int size, char *str)
 		ft_exit();
 	res = ft_strncpy(res, str, size);
 	res[size] = '\0';
-	
 	return (res);
 }
 
@@ -75,7 +74,7 @@ char		*find_name(char *str)
 	return (name);
 }
 
-char		**rooms_split(char *str, char *s_n, char *e_n)
+char		**rooms_split(char *str)
 {
 	char	**arr;
 	char	*new;
@@ -85,12 +84,10 @@ char		**rooms_split(char *str, char *s_n, char *e_n)
 	if (!ft_strchr(str, '-'))
 		ft_exit();
 	arr = ft_strsplit(str, '-');
-	arr[2] = s_n;
-	arr[3] = e_n;
 	return (arr);
 }
 
-void		init_edges(t_read *term, char **arr)
+void		init_edges(t_read *term, char **arr, char *s_n, char *e_n)
 {
 	t_avl_str	*tmp;
 	t_avl_str	*tmp1;
@@ -102,14 +99,11 @@ void		init_edges(t_read *term, char **arr)
 	tmp1 = avl_str_find(term->root, arr[0], &ft_strcmp);
 	tmp2 = avl_str_find(term->root, arr[1], &ft_strcmp);
 	if (!tmp1 || !tmp2)
-	{
 		ft_exit();
-	}
-	free(arr);
 	if (tmp1 == term->start || tmp2 == term->start)
-		++(*(arr[2]));
+		++(*s_n);
 	if (tmp1 == term->end || tmp2 == term->end)
-		++(*(arr[3]));
+		++(*e_n);
 	state = new_state();
 	tmp = new_avl_str(tmp1->key, new_edge(tmp2, state, 1));
 	state->ends[0] = tmp;
@@ -126,7 +120,7 @@ int			push_edges(t_read *term, char *str, t_str_list *str_list)
 
 	s_n = 0;
 	e_n = 0;
-	init_edges(term, rooms_split(str, &s_n, &e_n));
+	init_edges(term, rooms_split(str), &s_n, &e_n);
 	while (gnl(0, &str) > 0)
 	{
 		add_to_list(str_list, str);
@@ -134,7 +128,7 @@ int			push_edges(t_read *term, char *str, t_str_list *str_list)
 			str[ft_strlen(str) - 1] = '\0';
 		if (!str || str[0] == '#')
 			continue ;
-		init_edges(term, rooms_split(str, &s_n, &e_n));
+		init_edges(term, rooms_split(str), &s_n, &e_n);
 	}
 	return ((s_n < e_n) ? (s_n) : (e_n));
 }
@@ -185,8 +179,7 @@ void			is_valid(t_read *term, t_str_list *str_list)
 				continue ;
 			}
 			if (!(tmp = avl_str_find(term->root, name, &ft_strcmp)))
-				term->root = avl_str_insert(term->root, \
-				init_node(term, str, &is_start), &ft_strcmp);
+				term->root = avl_str_insert(term->root, init_node(term, str, &is_start), &ft_strcmp);
 			else
 				term->max_paths = push_edges(term, str, str_list);
 		}
