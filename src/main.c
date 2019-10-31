@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 03:55:45 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 04:21:25 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void			free_str_list(t_str_list *term);
 
 void		ft_exit(void)
 {
+	write(1, "Error\n", 6);
 	exit(1);
 }
 
@@ -162,6 +163,8 @@ t_qelem		*queue_pop(t_my_queue *queue)
 }
 /*
 void		smart_free_rec(t_avl_str *root, t_my_queue *q)
+{
+}
 
 void		smart_free(t_avl_str *room)
 {
@@ -173,6 +176,7 @@ void		smart_free(t_avl_str *room)
 	{
 		tmp = queue_pop(&queue);
 		smart_free_rec(tmp->room->c.room.edges, q);
+		free(tmp->room);
 		free(tmp);
 	}
 }
@@ -730,6 +734,8 @@ int			main(int ac, char *av[])
 		++sols;
 		++i;
 	}
+	if (min == -1)
+		ft_exit();
 	sols -= i - 1;
 	sols += ind - 1;
 	printf("\n");
