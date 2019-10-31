@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 06:28:02 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 06:49:56 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,25 +16,6 @@
 #include "types.h"
 #include "lem_in.h"
 #include "read.h"
-
-#include <stdio.h>
-/*
-enum e_err = 
-{
-	READ_ERR,
-	MALLOC_ERR,
-	VALID_ERR,
-	LEN
-};
-
-char	*g_str_err[LEN] = 
-{
-	[READ_ERR] = "read error\n",
-	[MALLOC_ERR] = "cant allocate\n",
-	[VALID_ERR] = "fuck\n",
-};
-*/
-void			free_str_list(t_str_list *term);
 
 void		ft_exit(void)
 {
@@ -92,23 +73,6 @@ t_content	new_edge(t_avl_str *room, t_state *state, unsigned char n)
 	return (c);
 }
 
-void		print_edge(t_avl_str *node)
-{
-	printf("\t%s\n", node->key);
-}
-
-void		print_room(t_avl_str *node)
-{
-	printf("%s to:\n", node->key);
-	avl_str_infix(node->c.room.edges, &print_edge);
-	printf("\n");
-}
-
-void		print_avl_str(t_avl_str *node)
-{
-	printf("%s\n", node->key);
-}
-
 void		del_avl_str(t_avl_str *node)
 {
 	free(node->key);
@@ -162,21 +126,6 @@ t_qelem		*queue_pop(t_my_queue *queue)
 	tmp->next = NULL;
 	return (tmp);
 }
-
-typedef struct s_state_list		t_state_list;
-typedef struct s_list_elem		t_list_elem;
-
-struct							s_state_list
-{
-	t_list_elem					*start;
-	t_list_elem					*end;
-};
-
-struct							s_list_elem
-{
-	t_list_elem					*next;
-	t_state						*state;
-};
 
 void		del_list(t_state_list *list)
 {
@@ -627,9 +576,79 @@ void		move_ants(t_ants *ingame)
 	printf("L%d-%s\n", tmp->ind, tmp->room->edge->c.edge.room->key);
 }
 
-t_str_list		*is_valid_map(t_read *term);//
-void print_map(t_str_list_elem *start);
-	
+void		print_ants(t_path **sols, int min, int ind)
+{
+	int		i;
+	int		j;
+	t_ants	ingame;
+
+	printf("\n");
+	ingame = (t_ants){NULL, NULL};
+	i = 0;
+	while (i < min)
+	{
+		j = 0;
+		while (j < ind)
+		{
+			if ((*sols)[j].ants > 0)
+			{
+				add_ant(&ingame, (*sols)[j].path->top);
+				--(*sols)[j].ants;
+			}
+			++j;
+		}
+		move_ants(&ingame);
+		++i;
+	}
+}
+
+void		count_ants(t_path *paths, int n, int i)
+{
+	int		buf;
+	int		div;
+	int		mod;
+	int		j;
+
+	paths[-1].ants = 0;
+	j = 1;
+	while (j < i)
+	{
+		paths[-1].ants = paths->len - paths[-1].len;
+		n -= paths[-1].ants * j;
+		div = n / j;
+		mod = n % j;
+		if (n <= 0 || div == 0 || (div == 1 && mod == 0))
+		{
+			n += paths[-1].ants * j;
+			break ;
+		}
+		++paths;
+		++j;
+	}
+	paths[-1].ants = 0;
+	div = n / j;
+	mod = n % j;
+	--paths;
+	--j;
+	buf = 0;
+	while (j >= mod)
+	{
+		paths->ants += buf;
+		buf = paths->ants;
+		paths->ants += div;
+		--j;
+		--paths;
+	}
+	while (j >= 0)
+	{
+		paths->ants += buf;
+		buf = paths->ants;
+		paths->ants += div + 1;
+		--j;
+		--paths;
+	}
+}
+
 int			main(int ac, char *av[])
 {
 	int		i;
@@ -643,7 +662,6 @@ int			main(int ac, char *av[])
 	int		mod;
 	int		min;
 	int		ind;
-	t_ants	ingame;
 	t_read		terminates;
 	t_str_list	*str_list;
 	
@@ -663,46 +681,7 @@ int			main(int ac, char *av[])
 			break ;
 		path_invert(terminates.end);
 		find_paths(terminates.start, terminates.end, sols, i);
-		paths = *sols + 1;
-		n = terminates.ants;
-		paths[-1].ants = 0;
-		j = 1;
-		while (j < i)
-		{
-			paths[-1].ants = paths->len - paths[-1].len;
-			n -= paths[-1].ants * j;
-			div = n / j;
-			mod = n % j;
-			if (n <= 0 || div == 0 || (div == 1 && mod == 0))
-			{
-				n += paths[-1].ants * j;
-				break ;
-			}
-			++paths;
-			++j;
-		}
-		paths[-1].ants = 0;
-		div = n / j;
-		mod = n % j;
-		--paths;
-		--j;
-		int		buf = 0;
-		while (j >= mod)
-		{
-			paths->ants += buf;
-			buf = paths->ants;
-			paths->ants += div;
-			--j;
-			--paths;
-		}
-		while (j >= 0)
-		{
-			paths->ants += buf;
-			buf = paths->ants;
-			paths->ants += div + 1;
-			--j;
-			--paths;
-		}
+		count_ants(*sols + 1, terminates.ants, i);
 		if ((*sols)->ants + (*sols)->len - 1 < min || min == -1)
 		{
 			min = (*sols)->ants + (*sols)->len - 1;
@@ -715,26 +694,7 @@ int			main(int ac, char *av[])
 	if (min == -1)
 		ft_exit();
 	sols -= i - 1;
-	sols += ind - 1;
-	printf("\n");
-	ingame = (t_ants){NULL, NULL};
-	i = 0;
-	while (i < min)
-	{
-		j = 0;
-		while (j < ind)
-		{
-			if ((*sols)[j].ants > 0)
-			{
-				add_ant(&ingame, (*sols)[j].path->top);
-				--(*sols)[j].ants;
-			}
-			++j;
-		}
-		move_ants(&ingame);
-		++i;
-	}
-	sols -= ind - 1;
+	print_ants(sols + ind - 1, min, ind);
 	free_str_list(str_list);
 	smart_free(terminates.start);
 	del_sols(sols, i);

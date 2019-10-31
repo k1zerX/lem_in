@@ -6,24 +6,20 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:10:31 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 00:08:59 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 06:42:47 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef READ_H
 # define READ_H
 
+#include "types.h"
 #include "ctnr.h"
 #include "avl.h"
 #include "libft.h"
-#include "types.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-
-typedef struct s_read			t_read;
-typedef struct s_str_list		t_str_list;
-typedef struct s_str_list_elem	t_str_list_elem;
 
 struct					s_read
 {
