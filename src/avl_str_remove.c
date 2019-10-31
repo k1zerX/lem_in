@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/25 20:50:30 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 07:39:15 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 07:42:32 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static t_avl_str	*removemin(t_avl_str *node)
 t_avl_str			*avl_str_remove(t_avl_str *root, char *key, \
 				int (*cmp)(char *a, char *b))
 {
-	int		buf;
+	int			buf;
 	t_avl_str	*l;
 	t_avl_str	*r;
 	t_avl_str	*min;
