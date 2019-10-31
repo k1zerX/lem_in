@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 02:00:00 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 05:19:33 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,11 @@ char		*ft_str_dupl(int size, char *str)
 {
 	char	*res;
 
-	if (!(res = malloc(sizeof(char) * (size))))
+	if (!(res = malloc(sizeof(char) * (size + 1))))
 		ft_exit();
 	res = ft_strncpy(res, str, size);
+	res[size] = '\0';
+	
 	return (res);
 }
 
@@ -57,15 +59,14 @@ char		*find_name(char *str)
 	char	*name;
 	int		i;
 
-	if (*str == '#' && *(str + 1) != '#')
-		return (NULL);
-	if (*str == '#')
+	if (*str == '#' && *(str + 1) == '#')
 		return (str);
+	if (*str == '#')
+		return (NULL);
 	else
 	{
 		i = 0;
-		while (str[i] != '\0' && str[i] != ' ' && \
-				str[i] != '-' && str[i] != '\n')
+		while (str[i] && str[i] != ' ' && str[i] != '-' && str[i] != '\n')
 			i++;
 		if (i == 0 || str[0] == 'L')
 			ft_exit();
@@ -74,7 +75,7 @@ char		*find_name(char *str)
 	return (name);
 }
 
-char		**rooms_split(char *str, char *s_n, char *e_n)
+char		**rooms_split(char *str)
 {
 	char	**arr;
 	char	*new;
@@ -84,12 +85,10 @@ char		**rooms_split(char *str, char *s_n, char *e_n)
 	if (!ft_strchr(str, '-'))
 		ft_exit();
 	arr = ft_strsplit(str, '-');
-	arr[2] = s_n;
-	arr[3] = e_n;
 	return (arr);
 }
 
-void		init_edges(t_read *term, char **arr)
+void		init_edges(t_read *term, char **arr, char *s_n, char *e_n)
 {
 	t_avl_str	*tmp;
 	t_avl_str	*tmp1;
@@ -101,12 +100,14 @@ void		init_edges(t_read *term, char **arr)
 	tmp1 = avl_str_find(term->root, arr[0], &ft_strcmp);
 	tmp2 = avl_str_find(term->root, arr[1], &ft_strcmp);
 	if (!tmp1 || !tmp2)
+	{
 		ft_exit();
+	}
 	free(arr);
 	if (tmp1 == term->start || tmp2 == term->start)
-		++(*(arr[2]));
+		++(*s_n);
 	if (tmp1 == term->end || tmp2 == term->end)
-		++(*(arr[3]));
+		++(*e_n);
 	state = new_state();
 	tmp = new_avl_str(tmp1->key, new_edge(tmp2, state, 1));
 	state->ends[0] = tmp;
@@ -118,18 +119,27 @@ void		init_edges(t_read *term, char **arr)
 
 int			push_edges(t_read *term, char *str, t_str_list *str_list)
 {
-	char	s_n;
-	char	e_n;
+	int		s_n;
+	int		e_n;
+	char	**arr;
 
 	s_n = 0;
 	e_n = 0;
-	init_edges(term, rooms_split(str, &s_n, &e_n));
+	arr = rooms_split(str);
+	init_edges(term, arr, &s_n, &e_n);
+	free(arr);
+	// free(arr[1]);
 	while (gnl(0, &str) > 0)
 	{
 		add_to_list(str_list, str);
+		if (str[ft_strlen(str) - 1] == 13)
+			str[ft_strlen(str) - 1] = '\0';
 		if (!str || str[0] == '#')
 			continue ;
-		init_edges(term, rooms_split(str, &s_n, &e_n));
+		arr = rooms_split(str);
+		init_edges(term, arr, &s_n, &e_n);
+		free(arr);
+		// free(arr[1]);
 	}
 	return ((s_n < e_n) ? (s_n) : (e_n));
 }
@@ -169,6 +179,8 @@ void			is_valid(t_read *term, t_str_list *str_list)
 	while (gnl(0, &str) > 0)
 	{
 		add_to_list(str_list, str);
+		if (str[ft_strlen(str) - 1] == 13)
+			str[ft_strlen(str) - 1] = '\0';
 		if ((name = find_name(str)))
 		{
 			if (ft_strequ(name, "##start") || ft_strequ(name, "##end"))
