@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 08:32:43 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 08:56:59 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ int			main_cycle(t_path **sols, t_min *min, t_read *terminates)
 	return (i);
 }
 
-int			main(int ac, char *av[])
+int			main(void)
 {
 	int			i;
 	t_path		**sols;
@@ -132,6 +132,7 @@ int			main(int ac, char *av[])
 
 	terminates = (t_read){NULL, NULL, NULL, 0, 0};
 	str_list = is_valid_map(&terminates);
+	start_to_end(&terminates);
 	print_map(str_list->start);
 	if (!(sols = ft_memalloc(terminates.max_paths * sizeof(t_path *))))
 		ft_exit();

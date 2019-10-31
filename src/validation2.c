@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 07:20:37 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 07:23:56 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 08:57:22 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ void		free_str_list(t_str_list *term)
 char		**rooms_split(char *str)
 {
 	char	**arr;
-	char	*new;
 	int		i;
 
 	i = 0;

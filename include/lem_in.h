@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 18:59:18 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 08:39:14 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 08:49:34 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,5 +138,6 @@ void							free_str_list(t_str_list *term);
 char							*find_name(char *str);
 char							*ft_str_dupl(int size, char *str);
 void							add_to_list(t_str_list *list, char *s);
+void							start_to_end(t_read *terminates);
 
 #endif

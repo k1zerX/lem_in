@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:10:31 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 07:41:58 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 08:50:33 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 # include "avl.h"
 # include "libft.h"
 
-# include <stdio.h>
 # include <stdlib.h>
 
 struct					s_read
