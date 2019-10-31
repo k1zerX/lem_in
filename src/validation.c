@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 20:05:59 by etuffleb          #+#    #+#             */
-/*   Updated: 2019/10/31 05:19:33 by etuffleb         ###   ########.fr       */
+/*   Updated: 2019/10/31 05:26:16 by etuffleb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ char		*find_name(char *str)
 	return (name);
 }
 
-char		**rooms_split(char *str)
+char		**rooms_split(char *str, char *s_n, char *e_n)
 {
 	char	**arr;
 	char	*new;
@@ -85,10 +85,12 @@ char		**rooms_split(char *str)
 	if (!ft_strchr(str, '-'))
 		ft_exit();
 	arr = ft_strsplit(str, '-');
+	arr[2] = s_n;
+	arr[3] = e_n;
 	return (arr);
 }
 
-void		init_edges(t_read *term, char **arr, char *s_n, char *e_n)
+void		init_edges(t_read *term, char **arr)
 {
 	t_avl_str	*tmp;
 	t_avl_str	*tmp1;
@@ -105,9 +107,9 @@ void		init_edges(t_read *term, char **arr, char *s_n, char *e_n)
 	}
 	free(arr);
 	if (tmp1 == term->start || tmp2 == term->start)
-		++(*s_n);
+		++(*(arr[2]));
 	if (tmp1 == term->end || tmp2 == term->end)
-		++(*e_n);
+		++(*(arr[3]));
 	state = new_state();
 	tmp = new_avl_str(tmp1->key, new_edge(tmp2, state, 1));
 	state->ends[0] = tmp;
@@ -119,16 +121,12 @@ void		init_edges(t_read *term, char **arr, char *s_n, char *e_n)
 
 int			push_edges(t_read *term, char *str, t_str_list *str_list)
 {
-	int		s_n;
-	int		e_n;
-	char	**arr;
+	char	s_n;
+	char	e_n;
 
 	s_n = 0;
 	e_n = 0;
-	arr = rooms_split(str);
-	init_edges(term, arr, &s_n, &e_n);
-	free(arr);
-	// free(arr[1]);
+	init_edges(term, rooms_split(str, &s_n, &e_n));
 	while (gnl(0, &str) > 0)
 	{
 		add_to_list(str_list, str);
@@ -136,10 +134,7 @@ int			push_edges(t_read *term, char *str, t_str_list *str_list)
 			str[ft_strlen(str) - 1] = '\0';
 		if (!str || str[0] == '#')
 			continue ;
-		arr = rooms_split(str);
-		init_edges(term, arr, &s_n, &e_n);
-		free(arr);
-		// free(arr[1]);
+		init_edges(term, rooms_split(str, &s_n, &e_n));
 	}
 	return ((s_n < e_n) ? (s_n) : (e_n));
 }
