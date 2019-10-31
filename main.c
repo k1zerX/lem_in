@@ -6,7 +6,7 @@
 /*   By: etuffleb <etuffleb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/26 18:44:38 by kbatz             #+#    #+#             */
-/*   Updated: 2019/10/31 07:11:48 by kbatz            ###   ########.fr       */
+/*   Updated: 2019/10/31 07:18:27 by kbatz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,12 +251,14 @@ void		reset(t_avl_str *start)
 	}
 }
 
-void		all_abcdefghijk(t_avl_str *edge_out, t_my_queue *queue, t_avl_str *start, int *len)
+void		all_abcdefghijk(t_avl_str *edge_out, t_my_queue *queue, \
+		t_avl_str *start, int *len)
 {
 	t_avl_str	*room;
 	t_avl_str	*edge_in;
 
-	if (!edge_out->c.edge.existance || !edge_out->c.edge.state->is_active || edge_out->c.edge.state->cross == 2)
+	if (!edge_out->c.edge.existance || !edge_out->c.edge.state->is_active || \
+			edge_out->c.edge.state->cross == 2)
 		return ;
 	edge_out->c.edge.state->is_active = 0;
 	edge_in = edge_out->c.edge.state->ends[edge_out->c.edge.n];
@@ -279,7 +281,8 @@ void		all_abcdefghijk(t_avl_str *edge_out, t_my_queue *queue, t_avl_str *start, 
 	queue_push(queue, room, edge_in);
 }
 
-void		all_not_dijkstra_suffix(t_avl_str *root, t_my_queue *queue, t_avl_str *start, int *len, char flag)
+void		all_not_dijkstra_suffix(t_avl_str *root, t_my_queue *queue, \
+		t_avl_str *start, int *len, char flag)
 {
 	t_avl_str	*room;
 
@@ -293,7 +296,8 @@ void		all_not_dijkstra_suffix(t_avl_str *root, t_my_queue *queue, t_avl_str *sta
 	all_abcdefghijk(root, queue, start, len);
 }
 
-void	all_not_dijkstra_fill(t_avl_str *room, t_avl_str *edge_in, t_my_queue *queue, t_avl_str *start, int *len)
+void	all_not_dijkstra_fill(t_avl_str *room, t_avl_str *edge_in, \
+		t_my_queue *queue, t_avl_str *start, int *len)
 {
 	t_avl_str	*edge_out;
 	t_avl_str	*prev_room;
@@ -302,9 +306,9 @@ void	all_not_dijkstra_fill(t_avl_str *room, t_avl_str *edge_in, t_my_queue *queu
 	{
 		edge_out = edge_in->c.edge.state->ends[edge_in->c.edge.n];
 		prev_room = edge_out->c.edge.room;
-		if (prev_room->c.room.shortest && room->c.room.divided) // from in to out
+		if (prev_room->c.room.shortest && room->c.room.divided)
 			all_not_dijkstra_suffix(room->c.room.edges, queue, start, len, 0);
-		if (!prev_room->c.room.shortest && room->c.room.divided) // from other to in
+		if (!prev_room->c.room.shortest && room->c.room.divided)
 			all_abcdefghijk(room->c.room.in_exc, queue, start, len);
 		if (!room->c.room.shortest)
 			all_not_dijkstra_suffix(room->c.room.edges, queue, start, len, 0);
@@ -335,7 +339,8 @@ void		abcdefghijk(t_avl_str *edge_out, t_my_queue *queue)
 	t_avl_str	*edge_in;
 	int			buf;
 
-	if (!edge_out->c.edge.existance || !edge_out->c.edge.state->is_active || edge_out->c.edge.state->cross == 2)
+	if (!edge_out->c.edge.existance || !edge_out->c.edge.state->is_active \
+			|| edge_out->c.edge.state->cross == 2)
 		return ;
 	edge_out->c.edge.state->is_active = 0;
 	edge_in = edge_out->c.edge.state->ends[edge_out->c.edge.n];
@@ -343,7 +348,8 @@ void		abcdefghijk(t_avl_str *edge_out, t_my_queue *queue)
 	if (room->c.room.divided && edge_out == room->c.room.out_exc)
 		if (!room->c.room.is_active && ((room->c.room.is_active = 0) || 1))
 			return ;
-	buf = edge_out->c.edge.room->c.room.distance + edge_out->c.edge.state->weight;
+	buf = edge_out->c.edge.room->c.room.distance + \
+		  edge_out->c.edge.state->weight;
 	if (room->c.room.froms->top)
 	{
 		if (room->c.room.distance > buf)
@@ -370,7 +376,8 @@ void		not_dijkstra_suffix(t_avl_str *root, t_my_queue *queue, char flag)
 	abcdefghijk(root, queue);
 }
 
-void	not_dijkstra_fill(t_avl_str *room, t_avl_str *edge_in, t_my_queue *queue)
+void	not_dijkstra_fill(t_avl_str *room, t_avl_str *edge_in, \
+		t_my_queue *queue)
 {
 	t_avl_str	*edge_out;
 	t_avl_str	*prev_room;
